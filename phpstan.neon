@@ -1,0 +1,48 @@
+includes:
+    # - phpstan-baseline.neon
+    # vendor/bin/phpstan analyse -b
+    # vendor\bin\phpstan analyse -b
+    - vendor/nunomaduro/larastan/extension.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/symplify/phpstan-extensions/config/config.neon
+
+parameters:
+    paths:
+        - app
+        - database
+        - tests
+        - routes
+
+    # The level 9 is the highest level (max)
+    level: max
+
+    ignoreErrors:
+        #        - message: '#Parameter \#1 \$description of method Laravel\\Jetstream\\Role\:\:description\(\) expects string, array\|string\|null given#'
+        #          path: app/Providers/JetstreamServiceProvider.php
+
+        #        - message: '#Parameter \#2 \$name of static method Laravel\\Jetstream\\Jetstream\:\:role\(\) expects string, array\|string\|null given#'
+        #          path: app/Providers/JetstreamServiceProvider.php
+
+        # - message: '#Parameter \#3 \$value of method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>\:\:whereDate\(\) expects DateTimeInterface\|string\|null, mixed given#'
+        #   path: app/Filament/Resources/UserResource.php
+
+        # phpstan is confused by view()
+        # - message: '#Parameter \#1 \(array\|string\|null\) of echo cannot be converted to string#'
+        #   paths:
+        #       - app/Http/Livewire/Weight.php
+        #       - app/Http/Livewire/Dashboard.php
+        #       - routes/web.php
+
+        # phpstan is confused by tests, which are passing.
+        # -   message: '#Cannot access property \$name on App\\Models\\Food\|null#'
+        #    path: tests/Feature/FoodTest.php
+
+    excludePaths:
+        - ./config/*
+        - ./ecs.php
+        - ./routes/console.php
+        # - ./database/factories/*
+        # - ./database/seeders/*
+        # - ./*/*/FileToBeExcluded.php
+
+    checkMissingIterableValueType: false

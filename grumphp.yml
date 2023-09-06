@@ -1,0 +1,35 @@
+grumphp:
+  process_timeout: 480
+  fixer:
+    enabled: true
+    fix_by_default: false
+  tasks:
+    phplint:
+      exclude: [ .git, node_modules, vendor ]
+      jobs: ~
+      short_open_tag: false
+      ignore_patterns: [ ]
+      triggered_by: [ 'php', 'phtml', 'php3', 'php4', 'php5' ]
+    ecs:
+      files_on_pre_commit: false
+      triggered_by: [ 'php' ]
+      clear-cache: false
+      no-progress-bar: true
+    phpstan:
+      configuration: phpstan.neon
+      triggered_by: [ 'php' ]
+      ignore_patterns: [ ]
+      memory_limit: "-1"
+    phpunit:
+      config_file: ~
+      testsuite: ~
+      group: [ ]
+      exclude_group: [ ]
+      always_execute: false
+      order: null
+    rector:
+      config: rector.php
+      triggered_by: [ 'php' ]
+      ignore_patterns: [ ]
+      clear_cache: true
+      no_diffs: false
