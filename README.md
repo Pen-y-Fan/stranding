@@ -133,14 +133,14 @@ composer tests
 You should see the results in testDoc format:
 
 ```text
-PHPUnit 10.3.2 by Sebastian Bergmann and contributors.
+PHPUnit 10.3.3 by Sebastian Bergmann and contributors.
 
 Runtime:       PHP 8.1.16
 Configuration: F:\laragon\www\stranding\phpunit.xml
 
 ..                                                                  2 / 2 (100%)
 
-Time: 00:00.121, Memory: 24.00 MB
+Time: 00:00.114, Memory: 24.00 MB
 
 Example (Tests\Feature\Example)
  ✔ The application returns a successful response
