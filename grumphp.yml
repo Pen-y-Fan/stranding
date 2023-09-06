@@ -27,9 +27,3 @@ grumphp:
       exclude_group: [ ]
       always_execute: false
       order: null
-    rector:
-      config: rector.php
-      triggered_by: [ 'php' ]
-      ignore_patterns: [ ]
-      clear_cache: true
-      no_diffs: false

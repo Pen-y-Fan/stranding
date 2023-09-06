@@ -22,6 +22,7 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/app',
         __DIR__ . '/bootstrap',
         __DIR__ . '/config',
+        __DIR__ . '/database',
         __DIR__ . '/public',
         __DIR__ . '/resources',
         __DIR__ . '/routes',
@@ -47,8 +48,8 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::TYPE_DECLARATION,
     ]);
 
-    // Import FQN to use statements:
-    $rectorConfig->importNames();
+    // Import FQN to use statements, excluding doc block names, as this breaks IDE helper:
+    $rectorConfig->importNames(importDocBlockNames: false);
 
     $rectorConfig->skip([
         // don't finalise classes, yet, maybe when the app has been completed
