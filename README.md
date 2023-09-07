@@ -2,7 +2,6 @@
 
 Progress tracker for Death Stranding
 
-
 ## Packages
 
 The following packages and plugins have been used:
@@ -155,20 +154,21 @@ OK (2 tests, 2 assertions)
 
 Database:
 
-districts
+district ✅
 
-- name (West, Central, East)
+- name (West, Central, East) ✅
 
-delivery_categories
+location ✅
 
-- name (Delivery Time, Delivery Volume, Cargo Condition, Miscellaneous)
+- name (Capital Knot City etc.) ✅
+- district_id ✅
+- is_physical ✅
 
-locations
+delivery_category ✅
 
-- name
-- district_id
+- name (Delivery Time, Delivery Volume, Cargo Condition, Miscellaneous) ✅
 
-orders
+order
 
 - number
 - name
@@ -177,22 +177,34 @@ orders
 - delivery_category_id
 - max_likes
 - weight
-- legend
 - status (unavailable, available, standby, in progress, complete)
 
-progress
+delivery
 
 - order_id
 - start_date (Date time)
-- complete_date (Date time)
-- status (in progress, failed, complete)
+- end_date (Date time)
+- status (in progress, failed, complete, stashed)
+- location_id current location of the delivery, default is 'In progress' + Other
+    - access via is_physical false on location 
+- comment, if the order is stashed at a pill box leave the location or comment on a failure.
 
 ## Logic
 
-- The default for all orders is unavailable
-- A user can list orders by location and update the available orders
+- The default status for all orders is unavailable
+- A user can list orders by client location and update the available orders
+- A user can filter by destination location to attempt to 'batch up' orders
 - A user can find an order, update the status to in progress, which will trigger the progress start_date
-- A user can find an order, update the status to failed, which will mark the progress to failed (for stats) and update the status to standby
-- A user can find an order, update the status to complete, which will mark the progress to complete (for stats) and update the status to complete
-- A user can filter large orders which require buddy bot or Floating carrier ( > 200 kg < 600 kg)
+- A user can find an order, update the status to failed, which will mark the progress to failed (for stats) and update
+  the status to standby
+- A user can find an order, update the status to complete, which will mark the progress to complete (for stats) and
+  update the status to complete
+- A user can filter large orders which require Delivery Bot or Floating carrier ( > 200 kg < 600 kg)
 - A user can filter orders for trucks ( > 600 kg)
+- A user can stash a delivery in a private locker at a location or in a pill box, these can be 'other' with a comment on
+  the location. Null is on person / truck etc
+- A user can multi filter by status (e.g. unavailable & available) to allow delivery planning 
+- A user can view update a delivery to failed and give a reason for failure (e.g. must be raining)
+- A user can view past failed deliveries with the comment(s) why each delivery failed 
+- A user can filter deliveries by district (West / Central) so they may view deliveries in progress including stashed deliveries
+- A user can filter orders by district (West / Central) so they may view orders

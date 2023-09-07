@@ -16,6 +16,7 @@ return new class() extends Migration {
         Schema::create('locations', static function (Blueprint $table): void {
             $table->id();
             $table->string('name')->unique();
+            $table->boolean('is_physical')->default(true);
             $table->foreignIdFor(District::class)
                 ->constrained()
                 ->cascadeOnUpdate()

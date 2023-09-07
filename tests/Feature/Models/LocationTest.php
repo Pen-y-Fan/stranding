@@ -73,4 +73,36 @@ class LocationTest extends TestCase
         $this->assertSame($district->id, $locationDistrict->id);
         $this->assertSame($district->name, $locationDistrict->name);
     }
+
+    public function test_a_location_can_be_limited_to_physical_location(): void
+    {
+        $district = District::factory()->create();
+        $this->assertInstanceOf(District::class, $district);
+
+        Location::factory()->create([
+            'name'        => 'Other',
+            'district_id' => $district->id,
+            'is_physical' => false,
+        ]);
+
+        $physicalLocation = Location::factory()->create([
+            'name'        => 'Capital Knot City',
+            'district_id' => $district->id,
+            'is_physical' => true,
+        ]);
+
+        Location::factory()->create([
+            'name'        => 'In progress',
+            'district_id' => $district->id,
+            'is_physical' => false,
+        ]);
+
+        $onlyPhysicalLocation = Location::query()
+            ->isPhysical()
+            ->first();
+
+        $this->assertInstanceOf(Location::class, $physicalLocation);
+        $this->assertInstanceOf(Location::class, $onlyPhysicalLocation);
+        $this->assertSame($physicalLocation->name, $onlyPhysicalLocation->name);
+    }
 }
