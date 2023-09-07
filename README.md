@@ -151,3 +151,48 @@ Example (Tests\Unit\Example)
 OK (2 tests, 2 assertions)
 ```
 
+## TODO
+
+Database:
+
+districts
+
+- name (West, Central, East)
+
+delivery_categories
+
+- name (Delivery Time, Delivery Volume, Cargo Condition, Miscellaneous)
+
+locations
+
+- name
+- district_id
+
+orders
+
+- number
+- name
+- client_id (locations)
+- destination_id (locations)
+- delivery_category_id
+- max_likes
+- weight
+- legend
+- status (unavailable, available, standby, in progress, complete)
+
+progress
+
+- order_id
+- start_date (Date time)
+- complete_date (Date time)
+- status (in progress, failed, complete)
+
+## Logic
+
+- The default for all orders is unavailable
+- A user can list orders by location and update the available orders
+- A user can find an order, update the status to in progress, which will trigger the progress start_date
+- A user can find an order, update the status to failed, which will mark the progress to failed (for stats) and update the status to standby
+- A user can find an order, update the status to complete, which will mark the progress to complete (for stats) and update the status to complete
+- A user can filter large orders which require buddy bot or Floating carrier ( > 200 kg < 600 kg)
+- A user can filter orders for trucks ( > 600 kg)
