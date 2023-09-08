@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Models;
 
 use App\Enum\OrderStatus;
+use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\User;
 use Database\Seeders\UserSeeder;
@@ -172,5 +173,34 @@ class UserTest extends TestCase
         $lastUserOrders->each(
             fn (Order $order) => $this->assertSame(OrderStatus::IN_PROGRESS->getLabel(), $order->pivot->status)
         );
+    }
+
+    public function test_an_user_can_have_many_deliveries(): void
+    {
+        User::factory()->create();
+        $user = User::factory()->create();
+        User::factory()->create();
+
+        $this->assertInstanceOf(User::class, $user);
+
+        $deliveries = Delivery::factory(3)->create([
+            'user_id' => $user->id,
+        ]);
+
+        $this->assertInstanceOf(Collection::class, $deliveries);
+
+        /** @var Collection<int, Delivery> $userDeliveries */
+        $userDeliveries = $user->deliveries;
+        $this->assertInstanceOf(Collection::class, $userDeliveries);
+        $this->assertCount(3, $userDeliveries);
+
+        $userDeliveries->each(fn (Delivery $delivery) => $this->assertSame($user->id, $delivery->user_id));
+
+        $firstOrderDelivery = $userDeliveries->first();
+        $firstDelivery      = $deliveries->first();
+
+        $this->assertInstanceOf(Delivery::class, $firstOrderDelivery);
+        $this->assertInstanceOf(Delivery::class, $firstDelivery);
+        $this->assertSame($firstDelivery->user_id, $firstOrderDelivery->user_id);
     }
 }

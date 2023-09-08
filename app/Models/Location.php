@@ -83,6 +83,14 @@ class Location extends Model
     }
 
     /**
+     * @return HasMany<Delivery>
+     */
+    public function deliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class);
+    }
+
+    /**
      * @param Builder<Location> $query
      * @return Builder<Location>
      */

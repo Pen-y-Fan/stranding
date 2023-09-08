@@ -1,8 +1,10 @@
 <?php
 
 declare(strict_types=1);
+use App\Models\Location;
+use App\Models\Order;
+use App\Models\User;
 
-use App\Models\DeliveryCategory;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,26 +15,24 @@ return new class() extends Migration {
      */
     public function up(): void
     {
-        Schema::create('orders', static function (Blueprint $table): void {
+        Schema::create('deliveries', static function (Blueprint $table): void {
             $table->id();
-            $table->unsignedSmallInteger('number')->unique();
-            $table->string('name');
-            $table->unsignedSmallInteger('max_likes');
-            $table->unsignedSmallInteger('weight')->default(0);
-
-            $table->foreignId('client_id')
-                ->constrained('locations')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
-            $table->foreignId('destination_id')
-                ->constrained('locations')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
-            $table->foreignIdFor(DeliveryCategory::class)
+            $table->dateTime('started_at');
+            $table->dateTime('ended_at')->nullable();
+            $table->string('status');
+            $table->text('comment')->nullable();
+            $table->foreignIdFor(Order::class)
                 ->constrained()
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
-
+            $table->foreignIdFor(User::class)
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+            $table->foreignIdFor(Location::class)
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
             $table->timestamps();
         });
     }
@@ -42,6 +42,6 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('deliveries');
     }
 };

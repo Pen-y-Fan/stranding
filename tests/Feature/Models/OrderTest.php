@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Models;
 
 use App\Enum\OrderStatus;
+use App\Models\Delivery;
 use App\Models\DeliveryCategory;
 use App\Models\District;
 use App\Models\Location;
@@ -256,5 +257,45 @@ class OrderTest extends TestCase
         $this->assertCount(1, $lastOrderUsers);
 
         $lastOrderUsers->each(fn (User $user) => $this->assertSame(OrderStatus::IN_PROGRESS->getLabel(), $user->pivot->status));
+    }
+
+    public function test_an_order_can_have_many_deliveries(): void
+    {
+        $order100 = Order::factory()->create([
+            'number' => 100,
+            'name'   => '[URGENT] Delivery: Tranquilizers',
+        ]);
+        $order101 = Order::factory()->create([
+            'number' => 101,
+            'name'   => 'Materials Delivery: Metals & Ceramics',
+        ]);
+        $order102 = Order::factory()->create([
+            'number' => 102,
+            'name'   => '[Re-order] Delivery: Smart Drugs to Waystation West of Capital Knot City',
+        ]);
+        $this->assertInstanceOf(Order::class, $order100);
+        $this->assertInstanceOf(Order::class, $order101);
+        $this->assertInstanceOf(Order::class, $order102);
+
+        /** @var Collection<int, Delivery> $deliveries */
+        $deliveries = Delivery::factory(3)->create([
+            'order_id' => $order101->id,
+        ]);
+
+        $this->assertInstanceOf(Collection::class, $deliveries);
+
+        /** @var Collection<int, Delivery> $orderDeliveries */
+        $orderDeliveries = $order101->deliveries;
+        $this->assertInstanceOf(Collection::class, $deliveries);
+        $this->assertCount(3, $orderDeliveries);
+
+        $orderDeliveries->each(fn (Delivery $delivery) => $this->assertSame($order101->id, $delivery->order_id));
+
+        $firstOrderDelivery = $orderDeliveries->first();
+        $firstDelivery      = $deliveries->first();
+
+        $this->assertInstanceOf(Delivery::class, $firstOrderDelivery);
+        $this->assertInstanceOf(Delivery::class, $firstDelivery);
+        $this->assertSame($firstDelivery->order_id, $firstOrderDelivery->order_id);
     }
 }

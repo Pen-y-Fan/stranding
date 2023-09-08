@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Models;
 
+use App\Models\Delivery;
 use App\Models\District;
 use App\Models\Location;
 use App\Models\Order;
@@ -170,5 +171,42 @@ class LocationTest extends TestCase
         $this->assertInstanceOf(Order::class, $firstClientOrder);
         $this->assertInstanceOf(Order::class, $firstOrder);
         $this->assertSame($firstOrder->name, $firstClientOrder->name);
+    }
+
+    public function test_a_location_can_have_many_deliveries(): void
+    {
+        Location::factory()->create([
+            'name' => 'Other',
+        ]);
+
+        $location = Location::factory()->create([
+            'name' => 'Distribution Center South of Lake Knot City',
+        ]);
+
+        Location::factory()->create([
+            'name' => 'Capital Knot City',
+        ]);
+
+        /** @var Collection<int, Delivery> $deliveries */
+        $deliveries = Delivery::factory(3)->create([
+            'location_id' => $location->id,
+        ]);
+
+        $this->assertInstanceOf(Location::class, $location);
+        $this->assertInstanceOf(Collection::class, $deliveries);
+
+        /** @var Collection<int, Delivery> $locationDeliveries */
+        $locationDeliveries = $location->deliveries;
+        $this->assertInstanceOf(Collection::class, $deliveries);
+        $this->assertCount(3, $locationDeliveries);
+
+        $locationDeliveries->each(fn (Delivery $delivery) => $this->assertSame($location->id, $delivery->location_id));
+
+        $firstLocationDelivery = $locationDeliveries->first();
+        $firstDelivery         = $deliveries->first();
+
+        $this->assertInstanceOf(Delivery::class, $firstLocationDelivery);
+        $this->assertInstanceOf(Delivery::class, $firstDelivery);
+        $this->assertSame($firstDelivery->location_id, $firstLocationDelivery->location_id);
     }
 }

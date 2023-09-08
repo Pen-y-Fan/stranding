@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Order
@@ -107,6 +108,14 @@ class Order extends Model
         return $this->belongsToMany(User::class)
             ->withPivot('status', 'id')
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<Delivery>
+     */
+    public function deliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class);
     }
 
     /**
