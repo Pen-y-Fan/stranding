@@ -6,6 +6,7 @@ namespace Tests\Feature\Models;
 
 use App\Models\District;
 use App\Models\Location;
+use App\Models\Order;
 use Database\Seeders\DistrictSeeder;
 use Database\Seeders\LocationSeeder;
 use Illuminate\Database\Eloquent\Collection;
@@ -27,12 +28,12 @@ class LocationTest extends TestCase
             'district_id' => $district->id,
         ];
 
-        $district = Location::create($data);
+        $location = Location::create($data);
 
         $this->assertDatabaseCount(Location::class, 1);
         $this->assertDatabaseHas(Location::class, $data);
-        $this->assertInstanceOf(Location::class, $district);
-        $this->assertSame($data['name'], $district->name);
+        $this->assertInstanceOf(Location::class, $location);
+        $this->assertSame($data['name'], $location->name);
     }
 
     public function test_a_location_can_be_created_using_a_factory(): void
@@ -104,5 +105,70 @@ class LocationTest extends TestCase
         $this->assertInstanceOf(Location::class, $physicalLocation);
         $this->assertInstanceOf(Location::class, $onlyPhysicalLocation);
         $this->assertSame($physicalLocation->name, $onlyPhysicalLocation->name);
+    }
+
+    public function test_a_location_can_have_many_client_orders(): void
+    {
+        Location::factory()->create([
+            'name' => 'Other',
+        ]);
+
+        $location = Location::factory()->create([
+            'name' => 'Capital Knot City',
+        ]);
+
+        Location::factory()->create([
+            'name' => 'Distribution Center South of Lake Knot City',
+        ]);
+
+        /** @var Collection<int, Order> $orders */
+        $orders = Order::factory(3)->create([
+            'client_id' => $location,
+        ]);
+
+        $this->assertInstanceOf(Location::class, $location);
+        $this->assertInstanceOf(Collection::class, $orders);
+
+        $clientOrders = $location->clientOrders;
+        $this->assertInstanceOf(Collection::class, $orders);
+        $this->assertCount(3, $clientOrders);
+
+        $clientOrders->each(fn (Order $order) => $this->assertSame($location->id, $order->client_id));
+    }
+
+    public function test_a_location_can_have_many_destination_orders(): void
+    {
+        Location::factory()->create([
+            'name' => 'Other',
+        ]);
+
+        $location = Location::factory()->create([
+            'name' => 'Distribution Center South of Lake Knot City',
+        ]);
+
+        Location::factory()->create([
+            'name' => 'Capital Knot City',
+        ]);
+
+        /** @var Collection<int, Order> $orders */
+        $orders = Order::factory(3)->create([
+            'client_id' => $location,
+        ]);
+
+        $this->assertInstanceOf(Location::class, $location);
+        $this->assertInstanceOf(Collection::class, $orders);
+
+        $clientOrders = $location->clientOrders;
+        $this->assertInstanceOf(Collection::class, $orders);
+        $this->assertCount(3, $clientOrders);
+
+        $clientOrders->each(fn (Order $order) => $this->assertSame($location->id, $order->client_id));
+
+        $firstClientOrder = $clientOrders->first();
+        $firstOrder       = $orders->first();
+
+        $this->assertInstanceOf(Order::class, $firstClientOrder);
+        $this->assertInstanceOf(Order::class, $firstOrder);
+        $this->assertSame($firstOrder->name, $firstClientOrder->name);
     }
 }

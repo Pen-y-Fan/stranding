@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Models;
 
 use App\Models\DeliveryCategory;
+use App\Models\Order;
 use Database\Seeders\DeliveryCategorySeeder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -48,28 +49,29 @@ class DeliveryCategoryTest extends TestCase
         $this->assertSame($data['delivery time']['name'], $firstDeliveryCategory->name);
     }
 
-    // TODO: Complete once Order model has been created.
-    //    public function test_a_delivery_category_can_have_many_orders(): void
-    //    {
-    //        $orderQuantity    = 3;
-    //        $deliveryCategory = DeliveryCategory::factory()->create();
-    //        $this->assertInstanceOf(DeliveryCategory::class, $deliveryCategory);
-    //
-    //        $this->markTestIncomplete('TODO: Complete once Order model has been created.');
-    //        $orders = Order::factory($orderQuantity)->create([
-    //            'delivery_category_id' => $deliveryCategory->id,
-    //        ]);
-    //        $this->assertInstanceOf(Collection::class, $orders);
-    //
-    //        $deliveryCategoryOrders = $deliveryCategory->orders;
-    //        $this->assertInstanceOf(Collection::class, $deliveryCategoryOrders);
-    //        $this->assertCount($orderQuantity, $deliveryCategoryOrders);
-    //
-    //        $firstDeliveryCategoryOrder = $deliveryCategoryOrders->first();
-    //        $firstOrder         = $orders->first();
-    //
-    //        $this->assertInstanceOf(Order::class, $firstDeliveryCategoryOrder);
-    //        $this->assertInstanceOf(Order::class, $firstOrder);
-    //        $this->assertSame($firstDeliveryCategoryOrder->name, $firstOrder->name);
-    //    }
+    public function test_a_delivery_category_can_have_many_orders(): void
+    {
+        $orderQuantity    = 3;
+        $deliveryCategory = DeliveryCategory::factory()->create();
+        $this->assertInstanceOf(DeliveryCategory::class, $deliveryCategory);
+
+        Order::factory()->create();
+        /** @var Collection<int, Order> $orders */
+        $orders = Order::factory($orderQuantity)->create([
+            'delivery_category_id' => $deliveryCategory->id,
+        ]);
+        Order::factory()->create();
+        $this->assertInstanceOf(Collection::class, $orders);
+
+        $deliveryCategoryOrders = $deliveryCategory->orders;
+        $this->assertInstanceOf(Collection::class, $deliveryCategoryOrders);
+        $this->assertCount($orderQuantity, $deliveryCategoryOrders);
+
+        $firstDeliveryCategoryOrder = $deliveryCategoryOrders->first();
+        $firstOrder                 = $orders->first();
+
+        $this->assertInstanceOf(Order::class, $firstDeliveryCategoryOrder);
+        $this->assertInstanceOf(Order::class, $firstOrder);
+        $this->assertSame($firstDeliveryCategoryOrder->name, $firstOrder->name);
+    }
 }

@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             DistrictSeeder::class,
             LocationSeeder::class,
             DeliveryCategorySeeder::class,
+            OrderSeeder::class,
         ]);
     }
 }

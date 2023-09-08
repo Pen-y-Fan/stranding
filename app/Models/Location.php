@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Location
@@ -30,6 +31,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Location whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Location whereUpdatedAt($value)
  * @method static Builder|Location whereIsPhysical($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $clientOrders
+ * @property-read int|null $client_orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $destinationOrders
+ * @property-read int|null $destination_orders_count
  * @mixin \Eloquent
  */
 class Location extends Model
@@ -52,13 +57,29 @@ class Location extends Model
     ];
 
     /**
-     * Get the Team associated with the location. Thoughts: will probably be better as a pivot table - in future
+     * Get the District associated with the Location.
      *
      * @return BelongsTo<District, Location>
      */
     public function district(): BelongsTo
     {
         return $this->belongsTo(District::class);
+    }
+
+    /**
+     * @return HasMany<Order>
+     */
+    public function clientOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'client_id');
+    }
+
+    /**
+     * @return HasMany<Order>
+     */
+    public function destinationOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'destination_id');
     }
 
     /**

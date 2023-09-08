@@ -17,25 +17,18 @@ parameters:
     level: max
 
     ignoreErrors:
-        #        - message: '#Parameter \#1 \$description of method Laravel\\Jetstream\\Role\:\:description\(\) expects string, array\|string\|null given#'
-        #          path: app/Providers/JetstreamServiceProvider.php
+        # not sure how to fix these, they probably needs a doc block with the return types. I'm happy its working the
+        # 'Laravel way' from the Laravel docs and tests
+        - message: '#Parameter \$get of static method Illuminate\\Database\\Eloquent\\Casts\\Attribute<mixed,mixed>\:\:make\(\) expects \(callable\(mixed, mixed\)\: float\)\|null, Closure\(int\)\: float given#'
+          path: app\Models\Order.php
 
-        #        - message: '#Parameter \#2 \$name of static method Laravel\\Jetstream\\Jetstream\:\:role\(\) expects string, array\|string\|null given#'
-        #          path: app/Providers/JetstreamServiceProvider.php
+        # I could loop over every array item before seeding, but I know it's never null from tests 🎉
+        - message: '#Cannot access property \$id on App\\Models\\DeliveryCategory\|null#'
+          path: database\seeders\OrderSeeder.php
 
-        # - message: '#Parameter \#3 \$value of method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>\:\:whereDate\(\) expects DateTimeInterface\|string\|null, mixed given#'
-        #   path: app/Filament/Resources/UserResource.php
-
-        # phpstan is confused by view()
-        # - message: '#Parameter \#1 \(array\|string\|null\) of echo cannot be converted to string#'
-        #   paths:
-        #       - app/Http/Livewire/Weight.php
-        #       - app/Http/Livewire/Dashboard.php
-        #       - routes/web.php
-
-        # phpstan is confused by tests, which are passing.
-        # -   message: '#Cannot access property \$name on App\\Models\\Food\|null#'
-        #    path: tests/Feature/FoodTest.php
+        # I could loop over every array item before seeding, but I know it's never null from tests 🎉
+        - message: '#Cannot access property \$id on App\\Models\\Location\|null#'
+          path: database\seeders\OrderSeeder.php
 
     excludePaths:
         - ./config/*

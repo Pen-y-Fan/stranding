@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\DeliveryCategory
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
+ * @property-read int|null $orders_count
  * @method static \Database\Factories\DeliveryCategoryFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|DeliveryCategory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DeliveryCategory newQuery()
@@ -32,12 +35,11 @@ class DeliveryCategory extends Model
         'name',
     ];
 
-    // TODO: HasMany relationship with orders
     /**
      * @return HasMany<Order>
      */
-    //    public function orders(): HasMany
-    //    {
-    //        return $this->hasMany(Order::class);
-    //    }
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }
