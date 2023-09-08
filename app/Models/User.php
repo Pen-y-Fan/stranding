@@ -32,6 +32,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
  * @property-read int|null $orders_count
  * @property-read \App\Models\OrderUser $pivot access to the pivot table's properties
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $deliveries
+ * @property-read int|null $deliveries_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
@@ -85,7 +87,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->email === 'admin@example.com';
+        return $this->email === 'admin@example.com' || $this->email === 'user@example.com';
     }
 
     /**

@@ -30,6 +30,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
  * @property-read \App\Models\OrderUser $pivot access to the pivot table's properties
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $deliveries
+ * @property-read int|null $deliveries_count
  * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()

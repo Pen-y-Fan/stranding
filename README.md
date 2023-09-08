@@ -99,6 +99,22 @@ php artisan migrate --seed
 php artisan migrate:fresh --seed 
 ```
 
+The seeder will populate:
+- Users (2): admin@example.com & user@example.com
+- Districts (3): West, Central and East
+- Locations (40): All the delivery locations in East and Central. From Capital Knot City to Wind Farm
+    - also locations for deliveries In progress and Other (e.g. a Pill box or private room)
+- DeliveryCategories (4): Delivery Time, Delivery Volume, Cargo Condition and Miscellaneous
+- Orders (540) - all the standard orders, which count towards 
+
+To generate 20 test deliveries run:
+
+```shell
+php artisan db:seed DeliverySeeder
+```
+
+This can be run multiple times, as required.
+
 ## Vite
 
 The first time you pull the project run install:
@@ -137,17 +153,11 @@ PHPUnit 10.3.3 by Sebastian Bergmann and contributors.
 Runtime:       PHP 8.1.16
 Configuration: F:\laragon\www\stranding\phpunit.xml
 
-..                                                                  2 / 2 (100%)
+.......................................                           39 / 39 (100%)
 
-Time: 00:00.114, Memory: 24.00 MB
+Time: 00:01.599, Memory: 54.00 MB
 
-Example (Tests\Feature\Example)
- ✔ The application returns a successful response
-
-Example (Tests\Unit\Example)
- ✔ That true is true
-
-OK (2 tests, 2 assertions)
+OK (39 tests, 214 assertions)
 ```
 
 ## TODO
@@ -187,7 +197,7 @@ pill boxes, use isPhysical() for the physical locations.
 - order_id   }
 - user_id    } unique
 
-#### delivery
+#### delivery ✅
 
 - order_id
 - user_id

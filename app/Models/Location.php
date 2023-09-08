@@ -20,6 +20,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\District $district
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $clientOrders
+ * @property-read int|null $client_orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $destinationOrders
+ * @property-read int|null $destination_orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $deliveries
+ * @property-read int|null $deliveries_count
  * @method static Builder|Location isPhysical()
  * @method static \Database\Factories\LocationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Location newModelQuery()
@@ -31,10 +37,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Location whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Location whereUpdatedAt($value)
  * @method static Builder|Location whereIsPhysical($value)
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $clientOrders
- * @property-read int|null $client_orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $destinationOrders
- * @property-read int|null $destination_orders_count
  * @mixin \Eloquent
  */
 class Location extends Model

@@ -16,6 +16,8 @@ use function PHPUnit\Framework\assertSame;
 
 class DeliverySeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     private const STATUS = [
         DeliveryStatus::IN_PROGRESS,
         DeliveryStatus::FAILED,
@@ -63,6 +65,8 @@ class DeliverySeeder extends Seeder
                 'user_id'     => $user->id,
                 'location_id' => $location->id,
                 'comment'     => fake()->sentence(),
+                'created_at'  => now(),
+                'updated_at'  => now(),
             ];
         }
 
