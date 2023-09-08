@@ -18,12 +18,8 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        User::factory()->create([
-            'name'  => 'admin',
-            'email' => 'admin@example.com',
-        ]);
-
         $this->call([
+            UserSeeder::class,
             DistrictSeeder::class,
             LocationSeeder::class,
             DeliveryCategorySeeder::class,

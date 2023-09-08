@@ -181,9 +181,9 @@ pill boxes, use isPhysical() for the physical locations.
 - max_likes
 - weight
 
-#### order_user
+#### order_user ✅
 
-- status (unavailable, available, standby, in progress, complete)
+- status OrderStatus Enum (unavailable, available, standby, in progress, complete) - this is the status of an order.
 - order_id   }
 - user_id    } unique
 
@@ -193,7 +193,7 @@ pill boxes, use isPhysical() for the physical locations.
 - user_id
 - start_date (Date time)
 - end_date (Date time)
-- status (in progress, failed, complete, stashed)
+- status (in progress, failed, complete, stashed) - this is the status of a delivery, not exactly the same as an order.
 - location_id current location of the delivery, default is 'In progress' + Other
     - access via is_physical false on location
 - comment, if the order is stashed at a pill box leave the location or comment on a failure.

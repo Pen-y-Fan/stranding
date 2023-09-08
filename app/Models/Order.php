@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * App\Models\Order
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $number
  * @property string $name
  * @property int $max_likes
- * @property float $weight weight is cast to a float, it stored as an int in the database
+ * @property float $weight weight is cast to a float, it is stored as an int in the database (x10)
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int $client_id
@@ -25,6 +26,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Location $client
  * @property-read \App\Models\Location $destination
  * @property-read \App\Models\DeliveryCategory $deliveryCategory
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @property-read \App\Models\OrderUser $pivot access to the pivot table's properties
  * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
@@ -92,6 +96,17 @@ class Order extends Model
     public function deliveryCategory(): BelongsTo
     {
         return $this->belongsTo(DeliveryCategory::class);
+    }
+
+    /**
+     * The Users that belong to the Order.
+     * @return BelongsToMany<User>
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('status', 'id')
+            ->withTimestamps();
     }
 
     /**
