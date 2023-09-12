@@ -15,25 +15,23 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DeliveryFactory extends Factory
 {
-    private const STATUS = [
-        DeliveryStatus::IN_PROGRESS,
-        DeliveryStatus::FAILED,
-        DeliveryStatus::COMPLETE,
-        DeliveryStatus::STASHED,
-    ];
+    //    private const STATUS = DeliveryStatus::toArrary;
 
     /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
+     * @throws \Exception
      */
     public function definition(): array
     {
-        $status = fake()->randomElement(self::STATUS);
+        $status = fake()->randomElement(DeliveryStatus::toArrayEnum());
         assert($status instanceof DeliveryStatus);
 
         $startedAt = now()->startOfDay()->subDays(random_int(1, 21));
-        $endedAt   = $status === DeliveryStatus::FAILED || $status === DeliveryStatus::COMPLETE ? $startedAt->clone()->addDay() : null;
+        $endedAt   = $status === DeliveryStatus::IN_PROGRESS || $status === DeliveryStatus::STASHED
+            ? null
+            : $startedAt->clone()->addDay();
 
         return [
             'started_at'  => $startedAt,

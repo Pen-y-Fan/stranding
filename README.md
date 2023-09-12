@@ -105,7 +105,7 @@ The seeder will populate:
 - Locations (40): All the delivery locations in East and Central. From Capital Knot City to Wind Farm
     - also locations for deliveries In progress and Other (e.g. a Pill box or private room)
 - DeliveryCategories (4): Delivery Time, Delivery Volume, Cargo Condition and Miscellaneous
-- Orders (540) - all the standard orders, which count towards 
+- Orders (540) - all the standard orders, which count towards game completion
 
 To generate 20 test deliveries run:
 
@@ -194,8 +194,8 @@ pill boxes, use isPhysical() for the physical locations.
 #### order_user ✅
 
 - status OrderStatus Enum (unavailable, available, standby, in progress, complete) - this is the status of an order.
-- order_id   }
-- user_id    } unique
+- order_id }
+- user_id } unique
 
 #### delivery ✅
 
@@ -207,6 +207,29 @@ pill boxes, use isPhysical() for the physical locations.
 - location_id current location of the delivery, default is 'In progress' + Other
     - access via is_physical false on location
 - comment, if the order is stashed at a pill box leave the location or comment on a failure.
+
+### Admin panel
+
+#### Delivery
+
+```shell
+php artisan make:filament-resource Delivery --generate
+```
+
+Allow a delivery to be viewed and edited.
+
+Starting a delivery will be from the order page, with 'begin delivery' action. Possibly 'Complete delivery' will be on
+the Order view too.
+
+This view will allow deliveries to be filtered, by default 'In progress' and 'Stashed' deliveries will be shown.
+
+#### Order
+
+```shell
+php artisan make:filament-resource Order --generate
+```
+
+Allow an order to be viewed and edited. Orders can be filtered District (East and Central), Client, Destination.
 
 ### Logic
 

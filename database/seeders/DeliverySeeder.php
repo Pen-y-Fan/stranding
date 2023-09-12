@@ -18,12 +18,13 @@ class DeliverySeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    private const STATUS = [
-        DeliveryStatus::IN_PROGRESS,
-        DeliveryStatus::FAILED,
-        DeliveryStatus::COMPLETE,
-        DeliveryStatus::STASHED,
-    ];
+    //    private const STATUS = [
+    //        DeliveryStatus::IN_PROGRESS,
+    //        DeliveryStatus::FAILED,
+    //        DeliveryStatus::COMPLETE,
+    //        DeliveryStatus::STASHED,
+    //        DeliveryStatus::LOST,
+    //    ];
 
     /**
      * Run the database seeds.
@@ -46,14 +47,18 @@ class DeliverySeeder extends Seeder
         $deliveries = [];
 
         for ($i = 0; $i < 20; ++$i) {
-            $status = fake()->randomElement(self::STATUS);
+            $status = fake()->randomElement(DeliveryStatus::toArrayEnum());
             assert($status instanceof DeliveryStatus);
 
             $startedAt = now()->startOfDay()->subDays(random_int(1, 21));
-            $endedAt   = $status === DeliveryStatus::FAILED || $status === DeliveryStatus::COMPLETE ? $startedAt->clone()->addDay() : null;
-            $order     = fake()->randomElement($orders);
-            $user      = fake()->randomElement($users);
-            $location  = $status === DeliveryStatus::IN_PROGRESS ? $inProgressLocation : fake()->randomElement($locations);
+            $endedAt   = $status === DeliveryStatus::IN_PROGRESS || $status === DeliveryStatus::STASHED
+                ? null
+                : $startedAt->clone()->addDay();
+            $order    = fake()->randomElement($orders);
+            $user     = fake()->randomElement($users);
+            $location = $status === DeliveryStatus::IN_PROGRESS
+                ? $inProgressLocation
+                : fake()->randomElement($locations);
             assert($order instanceof Order);
             assert($user instanceof User);
             assert($location instanceof Location);
