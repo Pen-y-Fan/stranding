@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\DeliveryResource\Pages;
+namespace App\Filament\Resources\OrderResource\Pages;
 
-use App\Filament\Resources\DeliveryResource;
+use App\Filament\Resources\OrderResource;
 use Filament\Actions;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditDelivery extends EditRecord
+class EditOrder extends EditRecord
 {
-    protected static string $resource = DeliveryResource::class;
+    protected static string $resource = OrderResource::class;
 
     protected function getHeaderActions(): array
     {

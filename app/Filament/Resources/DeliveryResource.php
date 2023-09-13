@@ -6,13 +6,27 @@ namespace App\Filament\Resources;
 
 use App\Enum\DeliveryStatus;
 use App\Filament\Resources\DeliveryResource\Pages;
+use App\Filament\Resources\DeliveryResource\Pages\CreateDelivery;
+use App\Filament\Resources\DeliveryResource\Pages\EditDelivery;
+use App\Filament\Resources\DeliveryResource\Pages\ListDeliveries;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Models\Delivery;
 use App\Models\Order;
 use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -28,33 +42,31 @@ class DeliveryResource extends Resource
         return $form
             ->schema(
                 [
-                    Forms\Components\Section::make()
+                    Section::make()
                         ->schema([
-                            Forms\Components\Select::make('order_id')
+                            Select::make('order_id')
                                 ->label('Order')
                                 ->searchable()
-                                ->options(static function (?Delivery $delivery): array {
-                                    return Order::all()
-                                        ->map(fn (Order $order) => [
-                                            'id'          => $order->id,
-                                            'number-name' => sprintf('%s %s', $order->number, $order->name),
-                                        ])
-                                        ->pluck('number-name', 'id')
-                                        ->toArray();
-                                })
-                                ->getSearchResultsUsing(fn (string $search): array => Order::query()
-                                    ->where('name', 'like', "%{$search}%")
+                                ->options(static fn (?Delivery $delivery): array => Order::all()
+                                    ->map(static fn (Order $order): array => [
+                                        'id'          => $order->id,
+                                        'number-name' => sprintf('%s %s', $order->number, $order->name),
+                                    ])
+                                    ->pluck('number-name', 'id')
+                                    ->toArray())
+                                ->getSearchResultsUsing(static fn (string $search): array => Order::query()
+                                    ->where('name', 'like', sprintf('%%%s%%', $search))
                                     ->orWhere('number', $search)
                                     ->limit(50)
                                     ->get()
-                                    ->map(fn (Order $order) => [
+                                    ->map(static fn (Order $order): array => [
                                         'id'          => $order->id,
                                         'number-name' => sprintf('%s %s', $order->number, $order->name),
                                     ])
                                     ->pluck('number-name', 'id')
                                     ->toArray())
                                 ->getOptionLabelUsing(
-                                    function ($value): string {
+                                    static function ($value): string {
                                         /** @var ?Order $order */
                                         $order = Order::find($value);
                                         return sprintf('%s %s', $order?->number, $order?->name);
@@ -62,34 +74,34 @@ class DeliveryResource extends Resource
                                 )
                                 ->loadingMessage('Loading orders...')
                                 ->required(),
-                            Forms\Components\Select::make('user_id')
+                            Select::make('user_id')
                                 ->relationship('user', 'name')
                                 ->loadingMessage('Loading users...')
                                 ->required(),
-                            Forms\Components\Select::make('location_id')
+                            Select::make('location_id')
                                 ->searchable()
                                 ->relationship('location', 'name')
                                 ->loadingMessage('Loading locations...')
                                 ->required(),
-                            Forms\Components\DateTimePicker::make('started_at')
+                            DateTimePicker::make('started_at')
                                 ->required(),
-                            Forms\Components\DateTimePicker::make('ended_at'),
-                            Forms\Components\Radio::make('status')
+                            DateTimePicker::make('ended_at'),
+                            Radio::make('status')
                                 ->options(DeliveryStatus::toArrayString())
                                 ->required(),
-                            Forms\Components\Textarea::make('comment')
+                            Textarea::make('comment')
                                 ->maxLength(65535)
                                 ->columnSpanFull(),
                         ])
                         ->columnSpan([
                             'lg' => 2,
                         ]),
-                    Forms\Components\Section::make()
+                    Section::make()
                         ->schema([
-                            Forms\Components\Placeholder::make('created_at')
+                            Placeholder::make('created_at')
                                 ->label(__('Created at'))
                                 ->content(static fn (?Delivery $delivery): ?string => $delivery?->created_at?->diffForHumans()),
-                            Forms\Components\Placeholder::make('updated_at')
+                            Placeholder::make('updated_at')
                                 ->label(__('Last modified at'))
                                 ->content(static fn (?Delivery $delivery): ?string => $delivery?->updated_at?->diffForHumans()),
                         ])
@@ -109,35 +121,35 @@ class DeliveryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('order.number')
+                TextColumn::make('order.number')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('order.name')
+                TextColumn::make('order.name')
                     ->wrap()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->wrap()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('location.name')
+                TextColumn::make('location.name')
                     ->wrap()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('started_at')
+                TextColumn::make('started_at')
                     ->wrap()
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ended_at')
+                TextColumn::make('ended_at')
                     ->wrap()
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -146,15 +158,15 @@ class DeliveryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ]);
     }
 
@@ -168,9 +180,9 @@ class DeliveryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListDeliveries::route('/'),
-            'create' => Pages\CreateDelivery::route('/create'),
-            'edit'   => Pages\EditDelivery::route('/{record}/edit'),
+            'index'  => ListDeliveries::route('/'),
+            'create' => CreateDelivery::route('/create'),
+            'edit'   => EditDelivery::route('/{record}/edit'),
         ];
     }
 }

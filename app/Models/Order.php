@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use http\Client;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * App\Models\Order
@@ -102,13 +104,31 @@ class Order extends Model
     }
 
     /**
+     * The Districts that belong to the Order (through Location).
+     * Equivalent to $order->client()->district
+     *
+     * @return BelongsToMany<District>
+     */
+    public function districts(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            District::class,
+            Location::class,
+            'id',
+            'district_id',
+            'client_id',
+            'id'
+        );
+    }
+
+    /**
      * The Users that belong to the Order.
      * @return BelongsToMany<User>
      */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
-            ->withPivot('status', 'id')
+            ->withPivot(['status', 'id'])
             ->withTimestamps();
     }
 

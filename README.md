@@ -229,13 +229,13 @@ This view will allow deliveries to be filtered, by default 'In progress' and 'St
 php artisan make:filament-resource Order --generate
 ```
 
-Allow an order to be viewed and edited. Orders can be filtered District (East and Central), Client, Destination.
+Allow an order to be viewed and edited. Orders can be filtered District (East and Central), Client, Destination. ✅
 
 ### Logic
 
 - The default status for all orders is unavailable ✅
-- A user can list orders by client location and update the available orders
-- A user can filter by destination location to attempt to 'batch up' orders
+- A user can list orders by client location and update the available orders ✅
+- A user can filter by destination location to attempt to 'batch up' orders ✅
 - A user can find an order, update the status to in progress, which will trigger the progress start_date
 - A user can find an order, update the status to failed, which will mark the progress to failed (for stats) and update
   the status to standby
@@ -251,4 +251,4 @@ Allow an order to be viewed and edited. Orders can be filtered District (East an
   to succeed next time
 - A user can filter deliveries by district (West / Central) so they may view deliveries in progress including stashed
   deliveries
-- A user can filter orders by district (West / Central) so they may view orders
+- A user can filter orders by district (West / Central) so they may view orders ✅
