@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DeliveryCategoryResource\Pages\CreateDeliveryCategory;
-use App\Filament\Resources\DeliveryCategoryResource\Pages\EditDeliveryCategory;
-use App\Filament\Resources\DeliveryCategoryResource\Pages\ListDeliveryCategories;
-use App\Filament\Resources\DeliveryCategoryResource\Pages\ViewDeliveryCategory;
-use App\Filament\Resources\DeliveryCategoryResource\RelationManagers\OrdersRelationManager;
-use App\Models\DeliveryCategory;
+use App\Filament\Resources\DistrictResource\Pages;
+use App\Filament\Resources\DistrictResource\Pages\CreateDistrict;
+use App\Filament\Resources\DistrictResource\Pages\EditDistrict;
+use App\Filament\Resources\DistrictResource\Pages\ListDistricts;
+use App\Filament\Resources\DistrictResource\Pages\ViewDistrict;
+use App\Filament\Resources\DistrictResource\RelationManagers\LocationsRelationManager;
+use App\Models\District;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -23,14 +25,14 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class DeliveryCategoryResource extends Resource
+class DistrictResource extends Resource
 {
-    protected static ?string $model = DeliveryCategory::class;
+    protected static ?string $model = District::class;
 
-    // php artisan make:filament-relation-manager DeliveryCategoryResource orders number
+    // php artisan make:filament-relation-manager DistrictResource locations name
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $navigationIcon = 'heroicon-o-map';
 
     public static function form(Form $form): Form
     {
@@ -51,15 +53,15 @@ class DeliveryCategoryResource extends Resource
                         ->schema([
                             Placeholder::make('created_at')
                                 ->label(__('Created at'))
-                                ->content(static fn (?DeliveryCategory $delivery): ?string => $delivery?->created_at?->diffForHumans()),
+                                ->content(static fn (?District $delivery): ?string => $delivery?->created_at?->diffForHumans()),
                             Placeholder::make('updated_at')
                                 ->label(__('Last modified at'))
-                                ->content(static fn (?DeliveryCategory $delivery): ?string => $delivery?->updated_at?->diffForHumans()),
+                                ->content(static fn (?District $delivery): ?string => $delivery?->updated_at?->diffForHumans()),
                         ])
                         ->columnSpan([
                             'lg' => 1,
                         ])
-                        ->hidden(static fn (?DeliveryCategory $delivery): bool => ! $delivery instanceof DeliveryCategory),
+                        ->hidden(static fn (?District $delivery): bool => ! $delivery instanceof District),
                 ]
             )
             ->columns([
@@ -74,8 +76,8 @@ class DeliveryCategoryResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('orders_count')
-                    ->counts('orders')
+                TextColumn::make('locations_count')
+                    ->counts('locations')
                     ->badge(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -106,17 +108,17 @@ class DeliveryCategoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            OrdersRelationManager::class,
+            LocationsRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListDeliveryCategories::route('/'),
-            'create' => CreateDeliveryCategory::route('/create'),
-            'view'   => ViewDeliveryCategory::route('/{record}'),
-            'edit'   => EditDeliveryCategory::route('/{record}/edit'),
+            'index'  => ListDistricts::route('/'),
+            'create' => CreateDistrict::route('/create'),
+            'view'   => ViewDistrict::route('/{record}'),
+            'edit'   => EditDistrict::route('/{record}/edit'),
         ];
     }
 }
