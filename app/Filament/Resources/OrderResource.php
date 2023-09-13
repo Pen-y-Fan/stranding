@@ -5,21 +5,17 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Enum\DeliveryStatus;
-use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\Pages\CreateOrder;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
-use App\Filament\Resources\OrderResource\RelationManagers;
+use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Models\DeliveryCategory;
-use App\Models\District;
 use App\Models\Location;
 use App\Models\Order;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Columns\TextColumn;
@@ -27,7 +23,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderResource extends Resource
 {
@@ -41,6 +36,7 @@ class OrderResource extends Resource
             ->schema([
                 TextInput::make('number')
                     ->required()
+                    ->unique(ignoreRecord: true)
                     ->numeric(),
                 TextInput::make('name')
                     ->required()
@@ -210,6 +206,7 @@ class OrderResource extends Resource
         return [
             'index'  => ListOrders::route('/'),
             'create' => CreateOrder::route('/create'),
+            'view'   => ViewOrder::route('/{record}'),
             'edit'   => EditOrder::route('/{record}/edit'),
         ];
     }

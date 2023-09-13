@@ -100,6 +100,7 @@ php artisan migrate:fresh --seed
 ```
 
 The seeder will populate:
+
 - Users (2): admin@example.com & user@example.com
 - Districts (3): West, Central and East
 - Locations (40): All the delivery locations in East and Central. From Capital Knot City to Wind Farm
@@ -226,10 +227,34 @@ This view will allow deliveries to be filtered, by default 'In progress' and 'St
 #### Order
 
 ```shell
-php artisan make:filament-resource Order --generate
+php artisan make:filament-resource Order --generate --view
 ```
 
 Allow an order to be viewed and edited. Orders can be filtered District (East and Central), Client, Destination. ✅
+
+TODO: Start new delivery action 🚧
+
+- check if there is already a delivery 'In Progress' or 'Stashed' and give the option to mark it lost or complete or
+  cancel
+- create a new delivery with the status of 'In Progress'
+
+Add view with relationship on Delivery and status 🚧
+
+#### Delivery Category
+
+```shell
+php artisan make:filament-resource DeliveryCategory --generate --view
+```
+
+Basic CRUD operations ✅
+
+#### District
+
+```shell
+php artisan make:filament-resource District --generate --view
+```
+
+Basic CRUD operations.
 
 ### Logic
 
