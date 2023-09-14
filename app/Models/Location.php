@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enum\DeliveryStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -90,6 +91,27 @@ class Location extends Model
     public function deliveries(): HasMany
     {
         return $this->hasMany(Delivery::class);
+    }
+
+    /**
+     * @return HasMany<Delivery>
+     */
+    public function completeDeliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class)
+            ->where('status', DeliveryStatus::COMPLETE);
+    }
+
+    /**
+     * @return HasMany<Order>
+     */
+    public function completeOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'client_id')
+            ->whereHas(
+                'deliveries',
+                fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
+            );
     }
 
     /**

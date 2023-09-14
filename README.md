@@ -254,6 +254,14 @@ Basic CRUD operations ✅
 php artisan make:filament-resource District --generate --view
 ```
 
+Basic CRUD operations. ✅
+
+#### Location
+
+```shell
+php artisan make:filament-resource Location --generate --view
+```
+
 Basic CRUD operations.
 
 ### Logic
@@ -262,8 +270,9 @@ Basic CRUD operations.
 - A user can list orders by client location and update the available orders ✅
 - A user can filter by destination location to attempt to 'batch up' orders ✅
 - A user can find an order, update the status to in progress, which will trigger the progress start_date
-- A user can find an order, update the status to failed, which will mark the progress to failed (for stats) and update
-  the status to standby
+- A user can find an order, update the status to failed, which will update the delivery progress to failed (for stats)
+  and location to the order's client location. The order_user status will be changed to standby, as the user will not be
+  able to re-take the order immediately
 - A user can find an order, update the status to complete, which will mark the progress to complete (for stats) and
   update the status to complete
 - A user can filter large orders which require Delivery Bot or Floating carrier ( > 200 kg < 600 kg)
