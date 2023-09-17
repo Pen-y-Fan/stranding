@@ -5,15 +5,29 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\LocationResource\Pages;
+use App\Filament\Resources\LocationResource\Pages\CreateLocation;
+use App\Filament\Resources\LocationResource\Pages\EditLocation;
+use App\Filament\Resources\LocationResource\Pages\ListLocations;
+use App\Filament\Resources\LocationResource\Pages\ViewLocation;
 use App\Filament\Resources\LocationResource\RelationManagers\CompleteOrdersRelationManager;
 use App\Filament\Resources\LocationResource\RelationManagers\DeliveriesRelationManager;
 use App\Models\Location;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -37,15 +51,15 @@ class LocationResource extends Resource
                 [
                     Section::make()
                         ->schema([
-                            Forms\Components\TextInput::make('name')
+                            TextInput::make('name')
                                 ->required()
                                 ->autofocus()
                                 ->unique(ignoreRecord: true)
                                 ->maxLength(255),
-                            Forms\Components\Select::make('district_id')
+                            Select::make('district_id')
                                 ->relationship('district', 'name')
                                 ->required(),
-                            Forms\Components\Toggle::make('is_physical')
+                            Toggle::make('is_physical')
                                 ->required(),
                         ])
                         ->columnSpan([
@@ -76,13 +90,13 @@ class LocationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->wrap()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('district.name')
+                TextColumn::make('district.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_physical')
+                IconColumn::make('is_physical')
                     ->alignCenter()
                     ->boolean(),
                 TextColumn::make('client_orders_count')
@@ -98,17 +112,17 @@ class LocationResource extends Resource
                     ->alignCenter()
                     ->badge(),
                 TextColumn::make('complete_orders_count')
-                    ->summarize(Tables\Columns\Summarizers\Sum::make())
+                    ->summarize(Sum::make())
                     ->label('Orders completed')
                     ->counts('completeOrders')
                     ->alignCenter()
                     ->badge()
                     ->color('success'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -119,16 +133,16 @@ class LocationResource extends Resource
                     ->label('District'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ViewAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ]);
     }
 
@@ -143,10 +157,10 @@ class LocationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListLocations::route('/'),
-            'create' => Pages\CreateLocation::route('/create'),
-            'view'   => Pages\ViewLocation::route('/{record}'),
-            'edit'   => Pages\EditLocation::route('/{record}/edit'),
+            'index'  => ListLocations::route('/'),
+            'create' => CreateLocation::route('/create'),
+            'view'   => ViewLocation::route('/{record}'),
+            'edit'   => EditLocation::route('/{record}/edit'),
         ];
     }
 }
