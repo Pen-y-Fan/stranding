@@ -27,6 +27,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $destination_orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $deliveries
  * @property-read int|null $deliveries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $completeDeliveries
+ * @property-read int|null $complete_deliveries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $completeOrders
+ * @property-read int|null $complete_orders_count
  * @method static Builder|Location isPhysical()
  * @method static \Database\Factories\LocationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Location newModelQuery()
@@ -110,7 +114,7 @@ class Location extends Model
         return $this->hasMany(Order::class, 'client_id')
             ->whereHas(
                 'deliveries',
-                fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
+                static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
             );
     }
 
