@@ -21,7 +21,7 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'number'               => fake()->numberBetween(100, 540),
+            'number'               => fake()->unique()->numberBetween(1000, 5400),
             'name'                 => fake()->sentence(),
             'client_id'            => Location::factory(),
             'destination_id'       => Location::factory(),

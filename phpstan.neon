@@ -30,6 +30,10 @@ parameters:
         - message: '#Cannot access property \$id on App\\Models\\Location\|null#'
           path: database\seeders\OrderSeeder.php
 
+        # This is filament's filter, I do not have access to define the array, it is actually a string key.
+        - message: '#Cannot access offset .* on mixed#'
+          path: app\Filament\Resources\OrderResource\Pages\ListOrders.php
+
     excludePaths:
         - ./config/*
         - ./ecs.php

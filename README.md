@@ -269,7 +269,7 @@ Basic CRUD operations.
 - The default status for all orders is unavailable ✅
 - A user can list orders by client location and update the available orders ✅
 - A user can filter by destination location to attempt to 'batch up' orders ✅
-- A user can find an order, update the status to in progress, which will trigger the progress start_date
+- A user can find an order, update the status to 'In progress', which will trigger the progress start_date
 - A user can find an order, update the status to failed, which will update the delivery progress to failed (for stats)
   and location to the order's client location. The order_user status will be changed to standby, as the user will not be
   able to re-take the order immediately

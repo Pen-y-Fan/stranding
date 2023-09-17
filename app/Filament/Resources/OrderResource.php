@@ -9,6 +9,7 @@ use App\Filament\Resources\OrderResource\Pages\CreateOrder;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
 use App\Filament\Resources\OrderResource\Pages\ViewOrder;
+use App\Filament\Resources\OrderResource\Widgets\OrdersOverview;
 use App\Models\DeliveryCategory;
 use App\Models\Location;
 use App\Models\Order;
@@ -208,6 +209,13 @@ class OrderResource extends Resource
             'create' => CreateOrder::route('/create'),
             'view'   => ViewOrder::route('/{record}'),
             'edit'   => EditOrder::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            OrdersOverview::class,
         ];
     }
 }
