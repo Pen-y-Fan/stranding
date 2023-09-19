@@ -86,6 +86,7 @@ The database will need to be manually created e.g.
 ```shell
 mysql -u YourDatabaseUserName (root)
 CREATE DATABASE stranding CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE electricity CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 exit
 ```
 
