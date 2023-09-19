@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace App\Filament\App\Resources;
 
 use App\Enum\DeliveryStatus;
-use App\Filament\Resources\OrderResource\Pages\CreateOrder;
-use App\Filament\Resources\OrderResource\Pages\EditOrder;
-use App\Filament\Resources\OrderResource\Pages\ListOrders;
-use App\Filament\Resources\OrderResource\Pages\ViewOrder;
-use App\Filament\Resources\OrderResource\Widgets\OrdersOverview;
+use App\Filament\App\Resources\OrderResource\Pages\CreateOrder;
+use App\Filament\App\Resources\OrderResource\Pages\EditOrder;
+use App\Filament\App\Resources\OrderResource\Pages\ListOrders;
+use App\Filament\App\Resources\OrderResource\Pages\ViewOrder;
+use App\Filament\App\Resources\OrderResource\Widgets\OrdersOverview;
+use App\Models\Delivery;
 use App\Models\DeliveryCategory;
 use App\Models\Location;
 use App\Models\Order;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Columns\TextColumn;
@@ -92,7 +95,8 @@ class OrderResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('deliveries.status')
+                TextColumn::make('userDeliveries.status')
+                    ->label('Deliveries')
                     ->badge()
                     ->default('None')
                     ->searchable(),
@@ -142,15 +146,16 @@ class OrderResource extends Resource
                     ->label(DeliveryStatus::IN_PROGRESS->getLabel())
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->orWhereHas(
-                        'deliveries',
+                        'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::IN_PROGRESS->getLabel())
+                            ->whereUserId(auth()->id())
                     )),
                 //     case FAILED      = 'Failed';
                 Filter::make('Failed')
                     ->label(DeliveryStatus::FAILED->getLabel())
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->orWhereHas(
-                        'deliveries',
+                        'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::FAILED->getLabel())
                     )),
                 //    case COMPLETE    = 'Complete';
@@ -158,7 +163,7 @@ class OrderResource extends Resource
                     ->label(DeliveryStatus::COMPLETE->getLabel())
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->orWhereHas(
-                        'deliveries',
+                        'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE->getLabel())
                     )),
 
@@ -167,7 +172,7 @@ class OrderResource extends Resource
                     ->label(DeliveryStatus::STASHED->getLabel())
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->orWhereHas(
-                        'deliveries',
+                        'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::STASHED->getLabel())
                     )),
 
@@ -176,11 +181,65 @@ class OrderResource extends Resource
                     ->label(DeliveryStatus::LOST->getLabel())
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->orWhereHas(
-                        'deliveries',
+                        'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::LOST->getLabel())
                     )),
             ])
             ->actions([
+                Action::make('Start delivery')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('info')
+                    ->visible(
+                        static fn (Order $record) => ! Delivery::query()
+                            ->whereIn(
+                                'status',
+                                [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()]
+                            )
+                            ->whereUserId(auth()->id())
+                            ->whereOrderId($record->id)
+                            ->exists()
+                    )
+                    ->action(function (Order $record) {
+                        Delivery::create([
+                            'order_id'    => $record->id,
+                            'user_id'     => auth()->id(),
+                            'started_at'  => now(),
+                            'ended_at'    => null,
+                            'status'      => DeliveryStatus::IN_PROGRESS,
+                            'location_id' => $record->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
+                                : Location::whereName('In progress (West)')->get('id')->firstOrFail()->id,
+                        ]);
+
+                        Notification::make()
+                            ->title('Delivery started')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('Complete delivery')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('success')
+                    ->visible(
+                        static fn (Order $record) => Delivery::query()
+                            ->whereIn(
+                                'status',
+                                [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()]
+                            )
+                            ->whereUserId(auth()->id())
+                            ->whereOrderId($record->id)
+                            ->exists()
+                    )
+                    ->action(fn (Order $record) => Delivery::where([
+                        'order_id' => $record->id,
+                        'user_id'  => auth()->id(),
+                        'ended_at' => null,
+                    ])
+                        ->update([
+                            'ended_at'    => now(),
+                            'status'      => DeliveryStatus::COMPLETE,
+                            'location_id' => $record->client_id,
+                        ])),
                 // start new delivery
                 //                Tables\Actions\EditAction::make(),
             ])

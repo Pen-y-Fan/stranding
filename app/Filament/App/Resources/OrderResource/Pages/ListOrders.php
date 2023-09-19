@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\App\Resources\OrderResource\Pages;
 
 use App\Enum\OrderStatus;
-use App\Filament\Resources\OrderResource;
-use App\Filament\Resources\OrderResource\Widgets\OrdersOverview;
+use App\Filament\App\Resources\OrderResource;
+use App\Filament\App\Resources\OrderResource\Widgets\OrdersOverview;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Log;

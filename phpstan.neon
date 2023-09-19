@@ -36,6 +36,10 @@ parameters:
           - app\Filament\Resources\OrderResource\Pages\ListOrders.php
           - app\Filament\App\Resources\OrderResource\Pages\ListOrders.php
 
+        # Filament's getEloquentQuery is returning Delivery
+        - message: '#Method App\\Filament\\App\\Resources\\DeliveryResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder<App\\Models\\Delivery> but returns Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>#'
+          path: app\Filament\App\Resources\DeliveryResource.php
+
     excludePaths:
         - ./config/*
         - ./ecs.php

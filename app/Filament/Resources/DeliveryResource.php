@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Enum\DeliveryStatus;
-use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\Pages\CreateDelivery;
 use App\Filament\Resources\DeliveryResource\Pages\EditDelivery;
 use App\Filament\Resources\DeliveryResource\Pages\ListDeliveries;
-use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Models\Delivery;
 use App\Models\Order;
-use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
@@ -21,15 +18,12 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DeliveryResource extends Resource
 {
@@ -119,6 +113,7 @@ class DeliveryResource extends Resource
 
     public static function table(Table $table): Table
     {
+        //        dd("Shouldn't be here!");
         return $table
             ->columns([
                 TextColumn::make('order.number')

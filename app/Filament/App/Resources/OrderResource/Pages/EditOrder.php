@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\App\Resources\OrderResource\Pages;
 
-use App\Filament\Resources\OrderResource;
+use App\Filament\App\Resources\OrderResource;
 use Filament\Actions;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;

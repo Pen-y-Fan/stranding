@@ -141,6 +141,15 @@ class Order extends Model
     }
 
     /**
+     * @return HasMany<Delivery>
+     */
+    public function userDeliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class, 'order_id', 'id')
+            ->whereUserId(auth()->id());
+    }
+
+    /**
      * weight is cast to a float e.g. 2.4 kg, but stored (set) as an int (24) in the database.
      * When retrieved (get) from the database it will be cast back to a float.
      * $order->weight will be a float (e.g. 2.4).

@@ -24,12 +24,22 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class DeliveryResource extends Resource
 {
     protected static ?string $model = Delivery::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
+
+    /**
+     * @return Builder<Delivery>
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereUserId(auth()->id());
+    }
 
     public static function form(Form $form): Form
     {
@@ -68,10 +78,10 @@ class DeliveryResource extends Resource
                                 )
                                 ->loadingMessage('Loading orders...')
                                 ->required(),
-                            Select::make('user_id')
-                                ->relationship('user', 'name')
-                                ->loadingMessage('Loading users...')
-                                ->required(),
+                            //                            Select::make('user_id')
+                            //                                ->relationship('user', 'name')
+                            //                                ->loadingMessage('Loading users...')
+                            //                                ->required(),
                             Select::make('location_id')
                                 ->searchable()
                                 ->relationship('location', 'name')
@@ -122,9 +132,9 @@ class DeliveryResource extends Resource
                     ->wrap()
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('user.name')
-                    ->wrap()
-                    ->sortable(),
+                //                TextColumn::make('user.name')
+                //                    ->wrap()
+                //                    ->sortable(),
                 TextColumn::make('location.name')
                     ->wrap()
                     ->sortable(),
