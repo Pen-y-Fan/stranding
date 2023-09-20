@@ -270,20 +270,21 @@ Basic CRUD operations.
 - The default status for all orders is unavailable ✅
 - A user can list orders by client location and update the available orders ✅
 - A user can filter by destination location to attempt to 'batch up' orders ✅
-- A user can find an order, update the status to 'In progress', which will trigger the progress start_date
+- A user can find an order, update the status to 'In progress', which will trigger the progress start_date ✅
 - A user can find an order, update the status to failed, which will update the delivery progress to failed (for stats)
   and location to the order's client location. The order_user status will be changed to standby, as the user will not be
-  able to re-take the order immediately
+  able to re-take the order immediately ✅
 - A user can find an order, update the status to complete, which will mark the progress to complete (for stats) and
-  update the status to complete
+  update the status to complete ✅
 - A user can filter large orders which require Delivery Bot or Floating carrier ( > 200 kg < 600 kg)
 - A user can filter orders for trucks ( > 600 kg)
 - A user can stash a delivery in a private locker at a location or in a pill box, these can be 'other' with a comment on
-  the location. Null is on person / truck etc
-- A user can multi filter by status (e.g. unavailable & available) to allow delivery planning
+  the location.
+- A user can multi filter by status (e.g. unavailable & available) to allow delivery planning ✅
 - A user can view update a delivery to failed and give a reason for failure (e.g. must be raining)
 - A user can view past failed deliveries with the comment(s) why each delivery failed to help remind the reason and help
   to succeed next time
 - A user can filter deliveries by district (West / Central) so they may view deliveries in progress including stashed
-  deliveries
+  deliveries ✅
 - A user can filter orders by district (West / Central) so they may view orders ✅
+- Orders: Number, description, max likes and weight, then other stuff.... ✅

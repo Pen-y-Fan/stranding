@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\App\Resources;
 
 use App\Enum\DeliveryStatus;
+use App\Filament\App\Actions\AcceptOrderBulkAction;
+use App\Filament\App\Actions\CompleteOrderBulkAction;
 use App\Filament\App\Resources\OrderResource\Pages\CreateOrder;
 use App\Filament\App\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\App\Resources\OrderResource\Pages\ListOrders;
@@ -22,6 +24,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -75,24 +78,27 @@ class OrderResource extends Resource
                 TextColumn::make('name')
                     ->wrap()
                     ->searchable(),
-                TextColumn::make('destination.district.name')
-                    ->sortable(),
-                TextColumn::make('client.name')
-                    ->wrap()
-                    ->sortable(),
-                TextColumn::make('destination.name')
-                    ->wrap()
-                    ->sortable(),
-                TextColumn::make('deliveryCategory.name')
-                    ->wrap()
-                    ->sortable()
-                    ->toggleable(),
                 TextColumn::make('max_likes')
                     ->numeric()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('weight')
                     ->numeric()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('client.name')
+                    ->wrap()
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('destination.name')
+                    ->wrap()
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('destination.district.name')
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('deliveryCategory.name')
+                    ->wrap()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('userDeliveries.status')
@@ -145,7 +151,7 @@ class OrderResource extends Resource
                 Filter::make('In progress')
                     ->label(DeliveryStatus::IN_PROGRESS->getLabel())
                     ->checkbox()
-                    ->query(static fn (Builder $query) => $query->orWhereHas(
+                    ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::IN_PROGRESS->getLabel())
                             ->whereUserId(auth()->id())
@@ -154,7 +160,7 @@ class OrderResource extends Resource
                 Filter::make('Failed')
                     ->label(DeliveryStatus::FAILED->getLabel())
                     ->checkbox()
-                    ->query(static fn (Builder $query) => $query->orWhereHas(
+                    ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::FAILED->getLabel())
                     )),
@@ -162,7 +168,7 @@ class OrderResource extends Resource
                 Filter::make('Complete')
                     ->label(DeliveryStatus::COMPLETE->getLabel())
                     ->checkbox()
-                    ->query(static fn (Builder $query) => $query->orWhereHas(
+                    ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE->getLabel())
                     )),
@@ -171,7 +177,7 @@ class OrderResource extends Resource
                 Filter::make('Stashed')
                     ->label(DeliveryStatus::STASHED->getLabel())
                     ->checkbox()
-                    ->query(static fn (Builder $query) => $query->orWhereHas(
+                    ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::STASHED->getLabel())
                     )),
@@ -180,7 +186,7 @@ class OrderResource extends Resource
                 Filter::make('Lost')
                     ->label(DeliveryStatus::LOST->getLabel())
                     ->checkbox()
-                    ->query(static fn (Builder $query) => $query->orWhereHas(
+                    ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::LOST->getLabel())
                     )),
@@ -245,8 +251,8 @@ class OrderResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    // start new delivery
-                    //                    Tables\Actions\DeleteBulkAction::make(),
+                    AcceptOrderBulkAction::make(),
+                    CompleteOrderBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([

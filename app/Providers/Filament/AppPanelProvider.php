@@ -28,7 +28,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('app')
             ->login()
-            ->maxContentWidth('7xl')
+            ->maxContentWidth('full')
             ->spa()
             ->topNavigation()
             ->colors([
