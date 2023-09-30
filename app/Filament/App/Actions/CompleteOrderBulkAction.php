@@ -23,9 +23,9 @@ class CompleteOrderBulkAction extends BulkAction
     {
         parent::setUp();
 
-        $this->label('Complete orders');
+        $this->label('Make delivery');
 
-        $this->modalHeading('Complete the orders for delivery');
+        $this->modalHeading('Deliver requested cargo');
 
         $this->modalSubmitActionLabel('Deliver');
 
@@ -46,7 +46,7 @@ class CompleteOrderBulkAction extends BulkAction
         $this->action(function (): void {
             $this->process(fn (Collection $records) => $records->each(function (Model $record): void {
                 assert($record instanceof Order);
-                $this->completeDelivery($record);
+                $this->makeDelivery($record);
 
                 $this->successCount++;
             }));
@@ -58,34 +58,34 @@ class CompleteOrderBulkAction extends BulkAction
 
     public static function getDefaultName(): ?string
     {
-        return 'Deliver orders';
+        return 'Make delivery';
     }
 
-    protected function completeDelivery(Order $record): void
+    protected function makeDelivery(Order $order): void
     {
         $success = Delivery::where([
-            'order_id' => $record->id,
+            'order_id' => $order->id,
             'user_id'  => auth()->id(),
             'ended_at' => null,
         ])
             ->update([
                 'ended_at'    => now(),
                 'status'      => DeliveryStatus::COMPLETE,
-                'location_id' => $record->client_id,
+                'location_id' => $order->client_id,
             ]);
 
         if ($success > 0) {
             return;
         }
 
-        // Allow the user to complete an order even if they forgot to mark it collected
+        // For bulk orders: allow the user to complete an order even if they forgot to mark it collected
         Delivery::create([
-            'order_id'    => $record->id,
+            'order_id'    => $order->id,
             'user_id'     => auth()->id(),
             'started_at'  => now(),
             'ended_at'    => now(),
             'status'      => DeliveryStatus::COMPLETE,
-            'location_id' => $record->client_id,
+            'location_id' => $order->client_id,
         ]);
     }
 }

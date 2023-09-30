@@ -26,20 +26,20 @@ class AcceptOrderBulkAction extends BulkAction
     {
         parent::setUp();
 
-        $this->label('Deliver orders');
+        $this->label('Take on orders');
 
-        $this->modalHeading('Accept orders for delivery');
+        $this->modalHeading('Take on standard delivery orders');
 
-        $this->modalSubmitActionLabel('Accept');
+        $this->modalSubmitActionLabel('Take');
 
         $this->successNotificationTitle(fn () => sprintf(
-            '%s %s accepted for delivery',
+            '%s %s taken for delivery',
             $this->acceptCount,
             Str::plural('order', $this->acceptCount)
         ));
         $this->failureNotificationTitle(
             fn () => sprintf(
-                '%s %s already in progress',
+                '%s %s already taken for delivery',
                 $this->failCount,
                 Str::plural('order', $this->failCount)
             )
@@ -60,7 +60,7 @@ class AcceptOrderBulkAction extends BulkAction
                     $this->failCount++;
                     return;
                 }
-                $this->createDelivery($record);
+                $this->takeOrder($record);
                 $this->acceptCount++;
             }));
 
@@ -78,28 +78,28 @@ class AcceptOrderBulkAction extends BulkAction
 
     public static function getDefaultName(): ?string
     {
-        return 'Accept orders';
+        return 'Take on orders';
     }
 
-    protected function createDelivery(Order $record): void
+    protected function takeOrder(Order $order): void
     {
         Delivery::create([
-            'order_id'    => $record->id,
+            'order_id'    => $order->id,
             'user_id'     => auth()->id(),
             'started_at'  => now(),
             'ended_at'    => null,
             'status'      => DeliveryStatus::IN_PROGRESS,
-            'location_id' => $record->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
+            'location_id' => $order->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
                 : Location::whereName('In progress (West)')->get('id')->firstOrFail()->id,
         ]);
     }
 
-    protected function hasExisingOrderForDelivery(Order $record): bool
+    protected function hasExisingOrderForDelivery(Order $order): bool
     {
         return Delivery::query()
             ->whereIn('status', [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()])
             ->whereUserId(auth()->id())
-            ->whereOrderId($record->id)
+            ->whereOrderId($order->id)
             ->exists();
     }
 }

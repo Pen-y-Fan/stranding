@@ -288,3 +288,33 @@ Basic CRUD operations.
   deliveries ✅
 - A user can filter orders by district (West / Central) so they may view orders ✅
 - Orders: Number, description, max likes and weight, then other stuff.... ✅
+
+## TODO
+
+- Correct Region
+    - East > Western
+    - West > Eastern
+- Delivery list: 
+    - order number add url to Order show page.
+    - Add Actions
+- Order list:
+    - Update wording of action, bulk action and confirmation ✅
+        - take on orders - take on standard delivery orders  ✅
+        - make delivery - deliver requested cargo ✅
+    - make delivery badges url to delivery show (if possible) or url to filter delivery list by order.
+    - add visibility column as a dropdown
+    - add kg to weight and ≈ to Likes
+    - Add stash action, with location
+    - Add fail Action with option to add a comment for the reason
+    - Add region filter (Western and Central)
+    - Investigate delivery filters for Order - change from tick to select or radio buttons
+    - Maybe add 'undelivered' filters = delivery date null.
+- Order show:
+    - Add actions, show delivery history
+- Add stats / graph to Dashboard - deliveries per client with total (try stacked bar) 
+- add extra toggle column options (action?) 
+    - minimal (order, description, weight, likes),
+    - deliveries (order, description, weight, likes, client, destination)
+    - all
+- Move Actions to the relent Resource folder (App > Actions >... to App > Resources > OrderResource > Actions > ... ) 
+- Add source and licence information 

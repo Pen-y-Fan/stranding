@@ -192,7 +192,7 @@ class OrderResource extends Resource
                     )),
             ])
             ->actions([
-                Action::make('Start delivery')
+                Action::make('Take on order')
                     ->requiresConfirmation()
                     ->button()
                     ->color('info')
@@ -218,11 +218,11 @@ class OrderResource extends Resource
                         ]);
 
                         Notification::make()
-                            ->title('Delivery started')
+                            ->title('Standard delivery order taken')
                             ->success()
                             ->send();
                     }),
-                Action::make('Complete delivery')
+                Action::make('Make delivery')
                     ->requiresConfirmation()
                     ->button()
                     ->color('success')
@@ -236,18 +236,23 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->action(fn (Order $record) => Delivery::where([
-                        'order_id' => $record->id,
-                        'user_id'  => auth()->id(),
-                        'ended_at' => null,
-                    ])
-                        ->update([
-                            'ended_at'    => now(),
-                            'status'      => DeliveryStatus::COMPLETE,
-                            'location_id' => $record->client_id,
-                        ])),
-                // start new delivery
-                //                Tables\Actions\EditAction::make(),
+                    ->action(function (Order $record) {
+                        Delivery::where([
+                            'order_id' => $record->id,
+                            'user_id'  => auth()->id(),
+                            'ended_at' => null,
+                        ])
+                            ->update([
+                                'ended_at'    => now(),
+                                'status'      => DeliveryStatus::COMPLETE,
+                                'location_id' => $record->client_id,
+                            ]);
+
+                        Notification::make()
+                            ->title('requested cargo delivered')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
