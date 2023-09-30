@@ -42,7 +42,7 @@ class DeliverySeeder extends Seeder
         $locations          = self::getLocations();
         $users              = self::getUsers();
         $orders             = self::getOrders();
-        $inProgressLocation = $locations['In progress (Central)'];
+        $inProgressLocation = $locations['In progress (Central region)'];
 
         $deliveries = [];
 

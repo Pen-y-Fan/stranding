@@ -24,7 +24,7 @@ class DistrictSeeder extends Seeder
     {
         return [
             'west' => [
-                'name'       => 'West',
+                'name'       => 'Western',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -35,7 +35,7 @@ class DistrictSeeder extends Seeder
             ],
 
             'east' => [
-                'name'       => 'East',
+                'name'       => 'Eastern',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

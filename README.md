@@ -103,7 +103,7 @@ php artisan migrate:fresh --seed
 The seeder will populate:
 
 - Users (2): admin@example.com & user@example.com
-- Districts (3): West, Central and East
+- Districts (3): Western, Central and Eastern
 - Locations (40): All the delivery locations in East and Central. From Capital Knot City to Wind Farm
     - also locations for deliveries In progress and Other (e.g. a Pill box or private room)
 - DeliveryCategories (4): Delivery Time, Delivery Volume, Cargo Condition and Miscellaneous
@@ -284,29 +284,29 @@ Basic CRUD operations.
 - A user can view update a delivery to failed and give a reason for failure (e.g. must be raining)
 - A user can view past failed deliveries with the comment(s) why each delivery failed to help remind the reason and help
   to succeed next time
-- A user can filter deliveries by district (West / Central) so they may view deliveries in progress including stashed
+- A user can filter deliveries by district (Eastern / Central) so they may view deliveries in progress including stashed
   deliveries ✅
-- A user can filter orders by district (West / Central) so they may view orders ✅
+- A user can filter orders by district (Eastern / Central) so they may view orders ✅
 - Orders: Number, description, max likes and weight, then other stuff.... ✅
 
 ## TODO
 
 - Correct Region
-    - East > Western
-    - West > Eastern
-- Delivery list: 
-    - order number add url to Order show page.
+    - East > Western ✅
+    - West > Eastern ✅
+- Delivery list:
+    - order number add url to Order show page
     - Add Actions
 - Order list:
     - Update wording of action, bulk action and confirmation ✅
-        - take on orders - take on standard delivery orders  ✅
+        - take on orders - take on standard delivery orders ✅
         - make delivery - deliver requested cargo ✅
     - make delivery badges url to delivery show (if possible) or url to filter delivery list by order.
     - add visibility column as a dropdown
     - add kg to weight and ≈ to Likes
     - Add stash action, with location
     - Add fail Action with option to add a comment for the reason
-    - Add region filter (Western and Central)
+    - Add region filter (Eastern and Central)
     - Investigate delivery filters for Order - change from tick to select or radio buttons
     - Maybe add 'undelivered' filters = delivery date null.
 - Order show:

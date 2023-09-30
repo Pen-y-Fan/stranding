@@ -26,19 +26,19 @@ class LocationSeeder extends Seeder
     {
         $districts = self::getDistricts();
 
-        $west    = $districts['West'];
+        $east    = $districts['Eastern'];
         $central = $districts['Central'];
 
-        assert($west instanceof District);
+        assert($east instanceof District);
         assert($central instanceof District);
 
-        $westId    = $west->id;
+        $eastId    = $east->id;
         $centralId = $central->id;
 
         return [
             'Capital Knot City' => [
                 'name'        => 'Capital Knot City',
-                'district_id' => $westId,
+                'district_id' => $eastId,
                 'is_physical' => true,
                 'created_at'  => now(),
                 'updated_at'  => now(),
@@ -87,7 +87,7 @@ class LocationSeeder extends Seeder
             ],
             'Distribution Center West of Capital Knot City' => [
                 'name'        => 'Distribution Center West of Capital Knot City',
-                'district_id' => $westId,
+                'district_id' => $eastId,
                 'is_physical' => true,
                 'created_at'  => now(),
                 'updated_at'  => now(),
@@ -164,7 +164,7 @@ class LocationSeeder extends Seeder
             ],
             'Ludens Fan' => [
                 'name'        => 'Ludens Fan',
-                'district_id' => $westId,
+                'district_id' => $eastId,
                 'is_physical' => true,
                 'created_at'  => now(),
                 'updated_at'  => now(),
@@ -192,7 +192,7 @@ class LocationSeeder extends Seeder
             ],
             'Musician' => [
                 'name'        => 'Musician',
-                'district_id' => $westId,
+                'district_id' => $eastId,
                 'is_physical' => true,
                 'created_at'  => now(),
                 'updated_at'  => now(),
@@ -220,7 +220,7 @@ class LocationSeeder extends Seeder
             ],
             'Port Knot City' => [
                 'name'        => 'Port Knot City',
-                'district_id' => $westId,
+                'district_id' => $eastId,
                 'is_physical' => true,
                 'created_at'  => now(),
                 'updated_at'  => now(),
@@ -269,7 +269,7 @@ class LocationSeeder extends Seeder
             ],
             'Waystation West of Capital Knot City' => [
                 'name'        => 'Waystation West of Capital Knot City',
-                'district_id' => $westId,
+                'district_id' => $eastId,
                 'is_physical' => true,
                 'created_at'  => now(),
                 'updated_at'  => now(),
@@ -283,34 +283,34 @@ class LocationSeeder extends Seeder
             ],
             'Wind Farm' => [
                 'name'        => 'Wind Farm',
-                'district_id' => $westId,
+                'district_id' => $eastId,
                 'is_physical' => true,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
-            'In progress (West)' => [
-                'name'        => 'In progress (West)',
-                'district_id' => $westId,
+            'In progress (Eastern region)' => [
+                'name'        => 'In progress (Eastern region)',
+                'district_id' => $eastId,
                 'is_physical' => false,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
-            'In progress (Central)' => [
-                'name'        => 'In progress (Central)',
+            'In progress (Central region)' => [
+                'name'        => 'In progress (Central region)',
                 'district_id' => $centralId,
                 'is_physical' => false,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
-            'Other (West)' => [
-                'name'        => 'Other (West)',
-                'district_id' => $westId,
+            'Other (Eastern region)' => [
+                'name'        => 'Other (Eastern region)',
+                'district_id' => $eastId,
                 'is_physical' => false,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
-            'Other (Central)' => [
-                'name'        => 'Other (Central)',
+            'Other (Central region)' => [
+                'name'        => 'Other (Central region)',
                 'district_id' => $centralId,
                 'is_physical' => false,
                 'created_at'  => now(),
