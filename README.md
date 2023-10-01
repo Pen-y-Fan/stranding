@@ -310,11 +310,13 @@ Basic CRUD operations.
     - Investigate delivery filters for Order - change from tick to select or radio buttons
     - Maybe add 'undelivered' filters = delivery date null.
 - Order show:
-    - Add actions, show delivery history
-- Add stats / graph to Dashboard - deliveries per client with total (try stacked bar) 
-- add extra toggle column options (action?) 
+    - Add actions
+    - show delivery history
+- Add stats / graph to Dashboard - deliveries per client with total (try stacked bar) ✅ 
+- Add extra toggle column options (action?) 
     - minimal (order, description, weight, likes),
     - deliveries (order, description, weight, likes, client, destination)
     - all
 - Move Actions to the relent Resource folder (App > Actions >... to App > Resources > OrderResource > Actions > ... ) 
 - Add source and licence information 
+- Add Notification on actions and listeners to Widgets for changes in orders and deliveries.
