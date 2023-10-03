@@ -112,9 +112,18 @@ class Location extends Model
     public function completeOrders(): HasMany
     {
         return $this->hasMany(Order::class, 'client_id')
-            ->whereHas(
-                'deliveries',
-                static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
+            ->whereHas('completeDeliveries');
+    }
+
+    /**
+     * @return HasMany<Order>
+     */
+    public function incompleteOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'client_id')
+            ->whereDoesntHave(
+                'completeDeliveries'
+                //                static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
             );
     }
 

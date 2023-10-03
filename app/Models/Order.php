@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enum\DeliveryStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -138,6 +139,15 @@ class Order extends Model
     public function deliveries(): HasMany
     {
         return $this->hasMany(Delivery::class);
+    }
+
+    /**
+     * @return HasMany<Delivery>
+     */
+    public function completeDeliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class)
+            ->where('status', DeliveryStatus::COMPLETE);
     }
 
     /**

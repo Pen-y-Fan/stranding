@@ -7,39 +7,32 @@ namespace App\Filament\App\Widgets;
 use App\Enum\DeliveryStatus;
 use App\Models\District;
 use App\Models\Location;
-use App\Models\Order;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class CompleteOrdersEastChart extends ChartWidget
+class CompleteOrdersCentralAtoEChart extends ChartWidget
 {
-    protected static ?string $heading = 'Eastern region';
+    protected static ?string $heading = "Central region (Chiral Artist's Studio to Evo-devo Biologist)";
 
     protected function getData(): array
     {
-        $eastDistrict = District::query()
-            ->firstWhere('name', 'Eastern');
+        $centralDistrict = District::query()
+            ->firstWhere('name', 'Central');
 
-        assert($eastDistrict instanceof District);
+        assert($centralDistrict instanceof District);
 
-        $incompleteOrdersByLocationEast = Location::query()
+        $ordersByLocation = Location::query()
             ->isPhysical()
-            ->where('district_id', $eastDistrict->id)
+            ->where('name', '<', 'F')
+            ->where('district_id', $centralDistrict->id)
             ->withCount([
-                'clientOrders' => static fn (Builder $query) => $query->whereDoesntHave(
+                'clientOrders as incomplete_orders_count' => static fn (Builder $query) => $query->whereDoesntHave(
                     'deliveries',
                     static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
                         ->where('user_id', auth()->id())
                 ),
-            ])
-            ->get();
-
-        $deliveredOrderByLocationEast = Location::query()
-            ->isPhysical()
-            ->where('district_id', $eastDistrict->id)
-            ->withCount([
-                'clientOrders' => static fn (Builder $query) => $query->whereHas(
+                'clientOrders as complete_orders_count' => static fn (Builder $query) => $query->whereHas(
                     'deliveries',
                     static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
                         ->where('user_id', auth()->id())
@@ -51,18 +44,18 @@ class CompleteOrdersEastChart extends ChartWidget
             'datasets' => [
                 [
                     'label'           => 'Delivered',
-                    'data'            => $deliveredOrderByLocationEast->map(static fn (Location $location) => $location->client_orders_count),
+                    'data'            => $ordersByLocation->map(static fn (Location $location): int => $location->complete_orders_count ?? 0),
                     'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
                     'borderColor'     => 'rgba(75, 192, 192, 0.7)',
                 ],
                 [
                     'label'           => 'Incomplete',
-                    'data'            => $incompleteOrdersByLocationEast->map(static fn (Location $location) => $location->client_orders_count),
+                    'data'            => $ordersByLocation->map(static fn (Location $location): int => $location->incomplete_orders_count ?? 0),
                     'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
                     'borderColor'     => 'rgba(255, 99, 132, 0.7)',
                 ],
             ],
-            'labels' => $incompleteOrdersByLocationEast->map(static fn (Location $location) => $location->name),
+            'labels' => $ordersByLocation->map(static fn (Location $location) => $location->name),
         ];
     }
 

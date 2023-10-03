@@ -305,14 +305,16 @@ Basic CRUD operations.
     - add visibility column as a dropdown
     - add kg to weight and ≈ to Likes
     - Add stash action, with location
-    - Add fail Action with option to add a comment for the reason
+    - Add fail Action with option to add a comment for the reason (see ViewOrder)
     - Add region filter (Eastern and Central)
     - Investigate delivery filters for Order - change from tick to select or radio buttons
-    - Maybe add 'undelivered' filters = delivery date null.
+        - Maybe add 'In progress' filter = delivery date null.
 - Order show:
     - Add actions
     - show delivery history
 - Add stats / graph to Dashboard - deliveries per client with total (try stacked bar) ✅ 
+    - split Central A-E (10), F-M (9), N-W (10)
+    - Add 'in progress' to Doughnut chart, reduce incomplete by in progress count.
 - Add extra toggle column options (action?) 
     - minimal (order, description, weight, likes),
     - deliveries (order, description, weight, likes, client, destination)
