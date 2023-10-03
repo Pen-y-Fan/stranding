@@ -32,13 +32,13 @@ class AcceptOrderBulkAction extends BulkAction
 
         $this->modalSubmitActionLabel('Take');
 
-        $this->successNotificationTitle(fn () => sprintf(
+        $this->successNotificationTitle(fn (): string => sprintf(
             '%s %s taken for delivery',
             $this->acceptCount,
             Str::plural('order', $this->acceptCount)
         ));
         $this->failureNotificationTitle(
-            fn () => sprintf(
+            fn (): string => sprintf(
                 '%s %s already taken for delivery',
                 $this->failCount,
                 Str::plural('order', $this->failCount)
@@ -57,11 +57,12 @@ class AcceptOrderBulkAction extends BulkAction
             $this->process(fn (Collection $records) => $records->each(function (Model $record): void {
                 assert($record instanceof Order);
                 if ($this->hasExisingOrderForDelivery($record)) {
-                    $this->failCount++;
+                    ++$this->failCount;
                     return;
                 }
+
                 $this->takeOrder($record);
-                $this->acceptCount++;
+                ++$this->acceptCount;
             }));
 
             if ($this->acceptCount > 0) {

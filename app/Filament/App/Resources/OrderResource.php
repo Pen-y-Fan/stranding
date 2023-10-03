@@ -197,7 +197,7 @@ class OrderResource extends Resource
                     ->button()
                     ->color('info')
                     ->visible(
-                        static fn (Order $record) => ! Delivery::query()
+                        static fn (Order $record): bool => ! Delivery::query()
                             ->whereIn(
                                 'status',
                                 [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()]
@@ -206,7 +206,7 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->action(function (Order $record) {
+                    ->action(static function (Order $record): void {
                         Delivery::create([
                             'order_id'    => $record->id,
                             'user_id'     => auth()->id(),
@@ -216,7 +216,6 @@ class OrderResource extends Resource
                             'location_id' => $record->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
                                 : Location::whereName('In progress (West)')->get('id')->firstOrFail()->id,
                         ]);
-
                         Notification::make()
                             ->title('Standard delivery order taken')
                             ->success()
@@ -236,7 +235,7 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->action(function (Order $record) {
+                    ->action(static function (Order $record): void {
                         Delivery::where([
                             'order_id' => $record->id,
                             'user_id'  => auth()->id(),
@@ -247,7 +246,6 @@ class OrderResource extends Resource
                                 'status'      => DeliveryStatus::COMPLETE,
                                 'location_id' => $record->client_id,
                             ]);
-
                         Notification::make()
                             ->title('requested cargo delivered')
                             ->success()

@@ -295,8 +295,8 @@ Basic CRUD operations.
     - East > Western ✅
     - West > Eastern ✅
 - Delivery list:
-    - order number add url to Order show page
-    - Add Actions
+    - order number add url to Order show page ✅
+    - Add Actions (also added to Edit) ✅
 - Order list:
     - Update wording of action, bulk action and confirmation ✅
         - take on orders - take on standard delivery orders ✅
@@ -310,11 +310,11 @@ Basic CRUD operations.
     - Investigate delivery filters for Order - change from tick to select or radio buttons
         - Maybe add 'In progress' filter = delivery date null.
 - Order show:
-    - Add actions
+    - Add actions ✅
     - show delivery history
 - Add stats / graph to Dashboard - deliveries per client with total (try stacked bar) ✅ 
-    - split Central A-E (10), F-M (9), N-W (10)
-    - Add 'in progress' to Doughnut chart, reduce incomplete by in progress count.
+    - split Central A-E (10), F-M (9), N-W (10) ✅
+    - Add 'in progress' to Doughnut chart, reduce incomplete by in progress count. ✅
 - Add extra toggle column options (action?) 
     - minimal (order, description, weight, likes),
     - deliveries (order, description, weight, likes, client, destination)

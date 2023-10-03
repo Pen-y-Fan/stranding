@@ -29,7 +29,7 @@ class CompleteOrderBulkAction extends BulkAction
 
         $this->modalSubmitActionLabel('Deliver');
 
-        $this->successNotificationTitle(fn () => sprintf(
+        $this->successNotificationTitle(fn (): string => sprintf(
             '%s %s delivered 🎉',
             $this->successCount,
             Str::plural('order', $this->successCount)
@@ -48,7 +48,7 @@ class CompleteOrderBulkAction extends BulkAction
                 assert($record instanceof Order);
                 $this->makeDelivery($record);
 
-                $this->successCount++;
+                ++$this->successCount;
             }));
 
             $this->success();

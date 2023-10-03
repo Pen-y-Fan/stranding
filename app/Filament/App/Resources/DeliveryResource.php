@@ -8,6 +8,7 @@ use App\Enum\DeliveryStatus;
 use App\Filament\App\Resources\DeliveryResource\Pages\CreateDelivery;
 use App\Filament\App\Resources\DeliveryResource\Pages\EditDelivery;
 use App\Filament\App\Resources\DeliveryResource\Pages\ListDeliveries;
+use App\Filament\Resources\OrderResource;
 use App\Models\Delivery;
 use App\Models\Order;
 use Filament\Forms\Components\DateTimePicker;
@@ -18,11 +19,13 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -126,10 +129,16 @@ class DeliveryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('order.number')
+                    ->url(static fn (Delivery $delivery): string => OrderResource::getUrl('view', [
+                        'record' => $delivery->order->id,
+                    ]))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('order.name')
                     ->wrap()
+                    ->url(static fn (Delivery $delivery): string => OrderResource::getUrl('view', [
+                        'record' => $delivery->order->id,
+                    ]))
                     ->searchable()
                     ->sortable(),
                 //                TextColumn::make('user.name')
@@ -158,11 +167,58 @@ class DeliveryResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('started_at', 'DESC')
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(
+                        DeliveryStatus::class
+                    ),
             ])
             ->actions([
                 EditAction::make(),
+                Action::make('Complete')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('success')
+                    ->visible(
+                        static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
+                            || $record->status                                === DeliveryStatus::STASHED
+                    )
+                    ->action(static fn (Order $record) => $record
+                        ->update([
+                            'ended_at'    => now(),
+                            'status'      => DeliveryStatus::COMPLETE,
+                            'location_id' => $record->client_id,
+                        ])),
+                Action::make('Fail')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('danger')
+                    ->visible(
+                        static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
+                            || $record->status                                === DeliveryStatus::STASHED
+                    )
+                    ->action(static fn (Order $record) => $record
+                        ->update([
+                            'ended_at'    => now(),
+                            'status'      => DeliveryStatus::FAILED,
+                            'location_id' => $record->destination_id,
+                        ])),
+                Action::make('Lost')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('warning')
+                    ->visible(
+                        static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
+                            || $record->status                                === DeliveryStatus::STASHED
+                    )
+                    ->action(static fn (Order $record) => $record
+                        ->update([
+                            'ended_at'    => now(),
+                            'status'      => DeliveryStatus::LOST,
+                            'location_id' => $record->client_id,
+                        ])),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

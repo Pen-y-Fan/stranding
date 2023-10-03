@@ -29,7 +29,7 @@ class ViewOrder extends ViewRecord
                 ->button()
                 ->color('info')
                 ->visible(
-                    static fn (Order $record) => ! Delivery::query()
+                    static fn (Order $record): bool => ! Delivery::query()
                         ->whereIn(
                             'status',
                             [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()]
@@ -38,7 +38,7 @@ class ViewOrder extends ViewRecord
                         ->whereOrderId($record->id)
                         ->exists()
                 )
-                ->action(function (Order $record) {
+                ->action(static function (Order $record): void {
                     Delivery::create([
                         'order_id'    => $record->id,
                         'user_id'     => auth()->id(),
@@ -48,7 +48,6 @@ class ViewOrder extends ViewRecord
                         'location_id' => $record->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
                             : Location::whereName('In progress (West)')->get('id')->firstOrFail()->id,
                     ]);
-
                     Notification::make()
                         ->title('Delivery started')
                         ->success()
@@ -68,7 +67,7 @@ class ViewOrder extends ViewRecord
                         ->whereOrderId($record->id)
                         ->exists()
                 )
-                ->action(fn (Order $record) => Delivery::where([
+                ->action(static fn (Order $record) => Delivery::where([
                     'order_id' => $record->id,
                     'user_id'  => auth()->id(),
                     'ended_at' => null,
@@ -92,7 +91,7 @@ class ViewOrder extends ViewRecord
                         ->whereOrderId($record->id)
                         ->exists()
                 )
-                ->action(fn (Order $record) => Delivery::where([
+                ->action(static fn (Order $record) => Delivery::where([
                     'order_id' => $record->id,
                     'user_id'  => auth()->id(),
                     'ended_at' => null,
@@ -100,7 +99,7 @@ class ViewOrder extends ViewRecord
                     ->update([
                         'ended_at'    => now(),
                         'status'      => DeliveryStatus::FAILED,
-                        'location_id' => $record->client_id,
+                        'location_id' => $record->destination_id,
                     ])),
             Action::make('Lost delivery')
                 ->requiresConfirmation()
@@ -116,7 +115,7 @@ class ViewOrder extends ViewRecord
                         ->whereOrderId($record->id)
                         ->exists()
                 )
-                ->action(fn (Order $record) => Delivery::where([
+                ->action(static fn (Order $record) => Delivery::where([
                     'order_id' => $record->id,
                     'user_id'  => auth()->id(),
                     'ended_at' => null,
