@@ -28,11 +28,11 @@ class EditDelivery extends EditRecord
                     static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
                         || $record->status                                === DeliveryStatus::STASHED
                 )
-                ->action(static fn (Order $record) => $record
+                ->action(static fn (Delivery $record) => $record
                     ->update([
                         'ended_at'    => now(),
                         'status'      => DeliveryStatus::COMPLETE,
-                        'location_id' => $record->client_id,
+                        'location_id' => $record->order->client_id,
                     ])),
             Action::make('Fail')
                 ->requiresConfirmation()
@@ -42,11 +42,11 @@ class EditDelivery extends EditRecord
                     static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
                         || $record->status                                === DeliveryStatus::STASHED
                 )
-                ->action(static fn (Order $record) => $record
+                ->action(static fn (Delivery $record) => $record
                     ->update([
                         'ended_at'    => now(),
                         'status'      => DeliveryStatus::FAILED,
-                        'location_id' => $record->destination_id,
+                        'location_id' => $record->order->destination_id,
                     ])),
             Action::make('Lost')
                 ->requiresConfirmation()
@@ -56,11 +56,11 @@ class EditDelivery extends EditRecord
                     static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
                         || $record->status                                === DeliveryStatus::STASHED
                 )
-                ->action(static fn (Order $record) => $record
+                ->action(static fn (Delivery $record) => $record
                     ->update([
                         'ended_at'    => now(),
                         'status'      => DeliveryStatus::LOST,
-                        'location_id' => $record->client_id,
+                        'location_id' => $record->order->client_id,
                     ])),
         ];
     }
