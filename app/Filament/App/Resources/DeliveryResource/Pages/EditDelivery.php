@@ -7,9 +7,9 @@ namespace App\Filament\App\Resources\DeliveryResource\Pages;
 use App\Enum\DeliveryStatus;
 use App\Filament\App\Resources\DeliveryResource;
 use App\Models\Delivery;
-use App\Models\Order;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Pages\EditRecord;
 
 class EditDelivery extends EditRecord
@@ -42,11 +42,17 @@ class EditDelivery extends EditRecord
                     static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
                         || $record->status                                === DeliveryStatus::STASHED
                 )
-                ->action(static fn (Delivery $record) => $record
+                ->form([
+                    Textarea::make('comment')
+                        ->maxLength(65_535)
+                        ->columnSpanFull(),
+                ])
+                ->action(static fn (array $data, Delivery $record) => $record
                     ->update([
                         'ended_at'    => now(),
                         'status'      => DeliveryStatus::FAILED,
                         'location_id' => $record->order->destination_id,
+                        'comment'     => $data['comment'],
                     ])),
             Action::make('Lost')
                 ->requiresConfirmation()
@@ -56,12 +62,20 @@ class EditDelivery extends EditRecord
                     static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
                         || $record->status                                === DeliveryStatus::STASHED
                 )
-                ->action(static fn (Delivery $record) => $record
-                    ->update([
-                        'ended_at'    => now(),
-                        'status'      => DeliveryStatus::LOST,
-                        'location_id' => $record->order->client_id,
-                    ])),
+                ->form([
+                    Textarea::make('comment')
+                        ->maxLength(65_535)
+                        ->columnSpanFull(),
+                ])
+                ->action(
+                    static fn (array $data, Delivery $record) => $record
+                        ->update([
+                            'ended_at'    => now(),
+                            'status'      => DeliveryStatus::LOST,
+                            'location_id' => $record->order->client_id,
+                            'comment'     => $data['comment'],
+                        ])
+                ),
         ];
     }
 }

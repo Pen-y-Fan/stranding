@@ -156,8 +156,11 @@ class DeliveryResource extends Resource
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('status')
-                    ->badge()
-                    ->searchable(),
+                    ->wrap()
+                    ->badge(),
+                TextColumn::make('comment')
+                    ->words(50)
+                    ->wrap(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -199,11 +202,17 @@ class DeliveryResource extends Resource
                         static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
                             || $record->status                                === DeliveryStatus::STASHED
                     )
-                    ->action(static fn (Delivery $record) => $record
+                    ->form([
+                        Textarea::make('comment')
+                            ->maxLength(65_535)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(static fn (array $data, Delivery $record) => $record
                         ->update([
                             'ended_at'    => now(),
                             'status'      => DeliveryStatus::FAILED,
                             'location_id' => $record->order->destination_id,
+                            'comment'     => $data['comment'],
                         ])),
                 Action::make('Lost')
                     ->requiresConfirmation()
@@ -213,11 +222,17 @@ class DeliveryResource extends Resource
                         static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
                             || $record->status                                === DeliveryStatus::STASHED
                     )
-                    ->action(static fn (Delivery $record) => $record
+                    ->form([
+                        Textarea::make('comment')
+                            ->maxLength(65_535)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(static fn (array $data, Delivery $record) => $record
                         ->update([
                             'ended_at'    => now(),
                             'status'      => DeliveryStatus::LOST,
                             'location_id' => $record->order->client_id,
+                            'comment'     => $data['comment'],
                         ])),
             ])
             ->bulkActions([

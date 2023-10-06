@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OrdersOverview extends BaseWidget
 {
-    protected static ?string $pollingInterval = null;
+    protected static ?string $pollingInterval = '30s';
 
     protected function getStats(): array
     {
@@ -36,14 +36,14 @@ class OrdersOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-gift')
                 ->extraAttributes([
                     'class'      => 'cursor-pointer',
-                    'wire:click' => sprintf("\$dispatch('setStatusFilter', { filter: '%s'})", OrderStatus::COMPLETE->getLabel()),
+                    'wire:click' => sprintf("\$dispatch('setStatusFilter', { filter: '%s'})", OrderStatus::COMPLETE->value),
                 ])
                 ->color('success'),
             Stat::make('Deliveries', $deliveriesOnGoingCount)
                 ->description('On going deliveries')
                 ->extraAttributes([
                     'class'      => 'cursor-pointer',
-                    'wire:click' => sprintf("\$dispatch('setStatusFilter', { filter: '%s'})", OrderStatus::IN_PROGRESS->getLabel()),
+                    'wire:click' => sprintf("\$dispatch('setStatusFilter', { filter: '%s'})", OrderStatus::IN_PROGRESS->value),
                 ])
                 ->descriptionIcon('heroicon-m-truck'),
         ];
