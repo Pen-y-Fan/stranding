@@ -190,7 +190,7 @@ class DeliveryResource extends Resource
                     )
                     ->action(static fn (Delivery $record) => $record
                         ->update([
-                            'ended_at'    => now(),
+                            'ended_at'    => now('Europe/London'),
                             'status'      => DeliveryStatus::COMPLETE,
                             'location_id' => $record->order->client_id,
                         ])),
@@ -209,7 +209,7 @@ class DeliveryResource extends Resource
                     ])
                     ->action(static fn (array $data, Delivery $record) => $record
                         ->update([
-                            'ended_at'    => now(),
+                            'ended_at'    => now('Europe/London'),
                             'status'      => DeliveryStatus::FAILED,
                             'location_id' => $record->order->destination_id,
                             'comment'     => $data['comment'],

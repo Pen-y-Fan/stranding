@@ -69,7 +69,7 @@ class CompleteOrderBulkAction extends BulkAction
             'ended_at' => null,
         ])
             ->update([
-                'ended_at'    => now(),
+                'ended_at'    => now('Europe/London'),
                 'status'      => DeliveryStatus::COMPLETE,
                 'location_id' => $order->client_id,
             ]);
@@ -82,8 +82,8 @@ class CompleteOrderBulkAction extends BulkAction
         Delivery::create([
             'order_id'    => $order->id,
             'user_id'     => auth()->id(),
-            'started_at'  => now(),
-            'ended_at'    => now(),
+            'started_at'  => now('Europe/London'),
+            'ended_at'    => now('Europe/London'),
             'status'      => DeliveryStatus::COMPLETE,
             'location_id' => $order->client_id,
         ]);

@@ -87,7 +87,7 @@ class AcceptOrderBulkAction extends BulkAction
         Delivery::create([
             'order_id'    => $order->id,
             'user_id'     => auth()->id(),
-            'started_at'  => now(),
+            'started_at'  => now('Europe/London'),
             'ended_at'    => null,
             'status'      => DeliveryStatus::IN_PROGRESS,
             'location_id' => $order->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id

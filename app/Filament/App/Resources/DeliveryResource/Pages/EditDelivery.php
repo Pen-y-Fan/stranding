@@ -49,7 +49,7 @@ class EditDelivery extends EditRecord
                 ])
                 ->action(static fn (array $data, Delivery $record) => $record
                     ->update([
-                        'ended_at'    => now(),
+                        'ended_at'    => now('Europe/London'),
                         'status'      => DeliveryStatus::FAILED,
                         'location_id' => $record->order->destination_id,
                         'comment'     => $data['comment'],
@@ -70,7 +70,7 @@ class EditDelivery extends EditRecord
                 ->action(
                     static fn (array $data, Delivery $record) => $record
                         ->update([
-                            'ended_at'    => now(),
+                            'ended_at'    => now('Europe/London'),
                             'status'      => DeliveryStatus::LOST,
                             'location_id' => $record->order->client_id,
                             'comment'     => $data['comment'],

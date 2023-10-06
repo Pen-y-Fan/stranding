@@ -210,7 +210,7 @@ class OrderResource extends Resource
                         Delivery::create([
                             'order_id'    => $record->id,
                             'user_id'     => auth()->id(),
-                            'started_at'  => now(),
+                            'started_at'  => now('Europe/London'),
                             'ended_at'    => null,
                             'status'      => DeliveryStatus::IN_PROGRESS,
                             'location_id' => $record->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
@@ -242,7 +242,7 @@ class OrderResource extends Resource
                             'ended_at' => null,
                         ])
                             ->update([
-                                'ended_at'    => now(),
+                                'ended_at'    => now('Europe/London'),
                                 'status'      => DeliveryStatus::COMPLETE,
                                 'location_id' => $record->client_id,
                             ]);
