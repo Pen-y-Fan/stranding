@@ -90,8 +90,9 @@ class AcceptOrderBulkAction extends BulkAction
             'started_at'  => now('Europe/London'),
             'ended_at'    => null,
             'status'      => DeliveryStatus::IN_PROGRESS,
-            'location_id' => $order->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
-                : Location::whereName('In progress (West)')->get('id')->firstOrFail()->id,
+            'location_id' => Location::whereDistrictId($order->client->district_id)
+                ->where('name', 'like', 'In progress%')
+                ->firstOrFail('id')->id,
         ]);
     }
 

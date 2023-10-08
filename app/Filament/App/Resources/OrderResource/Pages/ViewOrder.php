@@ -45,8 +45,9 @@ class ViewOrder extends ViewRecord
                         'started_at'  => now(),
                         'ended_at'    => null,
                         'status'      => DeliveryStatus::IN_PROGRESS,
-                        'location_id' => $record->client->district->name === 'Central' ? Location::whereName('In progress (Central)')->get('id')->firstOrFail()->id
-                            : Location::whereName('In progress (West)')->get('id')->firstOrFail()->id,
+                        'location_id' => Location::whereDistrictId($record->client->district_id)
+                            ->where('name', 'like', 'In progress%')
+                            ->firstOrFail('id')->id,
                     ]);
                     Notification::make()
                         ->title('Delivery started')
