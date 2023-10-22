@@ -29,7 +29,6 @@ class AppPanelProvider extends PanelProvider
             ->path('app')
             ->login()
             ->maxContentWidth('full')
-            ->spa()
             ->topNavigation()
             ->colors([
                 'danger'  => Color::Rose,
