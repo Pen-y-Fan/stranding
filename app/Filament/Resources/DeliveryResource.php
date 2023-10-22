@@ -114,7 +114,6 @@ class DeliveryResource extends Resource
 
     public static function table(Table $table): Table
     {
-        //        dd("Shouldn't be here!");
         return $table
             ->columns([
                 TextColumn::make('order.number')

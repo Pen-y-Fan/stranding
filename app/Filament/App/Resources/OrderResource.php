@@ -17,6 +17,7 @@ use App\Models\DeliveryCategory;
 use App\Models\Location;
 use App\Models\Order;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -153,7 +154,7 @@ class OrderResource extends Resource
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::IN_PROGRESS->getLabel())
+                        static fn (Builder $query) => $query->where('status', DeliveryStatus::IN_PROGRESS->value)
                             ->whereUserId(auth()->id())
                     )),
                 //     case FAILED      = 'Failed';
@@ -162,7 +163,7 @@ class OrderResource extends Resource
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::FAILED->getLabel())
+                        static fn (Builder $query) => $query->where('status', DeliveryStatus::FAILED->value)
                     )),
                 //    case COMPLETE    = 'Complete';
                 Filter::make('Complete')
@@ -170,7 +171,7 @@ class OrderResource extends Resource
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE->getLabel())
+                        static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE->value)
                     )),
 
                 //    case STASHED     = 'Stashed';
@@ -179,7 +180,7 @@ class OrderResource extends Resource
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::STASHED->getLabel())
+                        static fn (Builder $query) => $query->where('status', DeliveryStatus::STASHED->value)
                     )),
 
                 //    case LOST        = 'Lost';
@@ -188,7 +189,7 @@ class OrderResource extends Resource
                     ->checkbox()
                     ->query(static fn (Builder $query) => $query->whereHas(
                         'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::LOST->getLabel())
+                        static fn (Builder $query) => $query->where('status', DeliveryStatus::LOST->value)
                     )),
             ])
             ->actions([
@@ -200,7 +201,7 @@ class OrderResource extends Resource
                         static fn (Order $record): bool => ! Delivery::query()
                             ->whereIn(
                                 'status',
-                                [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()]
+                                [DeliveryStatus::IN_PROGRESS->value, DeliveryStatus::STASHED->value]
                             )
                             ->whereUserId(auth()->id())
                             ->whereOrderId($record->id)
@@ -222,6 +223,85 @@ class OrderResource extends Resource
                             ->success()
                             ->send();
                     }),
+                Action::make('Stash delivery')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('warning')
+                    ->visible(
+                        static fn (Order $record) => Delivery::query()
+                            ->where(
+                                'status',
+                                DeliveryStatus::IN_PROGRESS->value
+                            )
+                            ->whereUserId(auth()->id())
+                            ->whereOrderId($record->id)
+                            ->exists()
+                    )
+                    ->form([
+                        Select::make('location_id')
+                            ->searchable()
+                            ->relationship('client', 'name')
+                            ->loadingMessage('Loading locations...')
+                            ->required(),
+                        Textarea::make('comment')
+                            ->maxLength(65_535)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(static function (array $data, Order $record): void {
+                        Delivery::where([
+                            'order_id' => $record->id,
+                            'status'   => DeliveryStatus::IN_PROGRESS->value,
+                            'user_id'  => auth()->id(),
+                            'ended_at' => null,
+                        ])
+                            ->update([
+                                'status'      => DeliveryStatus::STASHED,
+                                'location_id' => $data['location_id'],
+                                'comment'     => $data['comment'],
+                            ]);
+                        Notification::make()
+                            ->title('requested cargo delivered')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('Continue delivery')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('info')
+                    ->visible(
+                        static fn (Order $record) => Delivery::query()
+                            ->where(
+                                'status',
+                                DeliveryStatus::STASHED->value
+                            )
+                            ->whereUserId(auth()->id())
+                            ->whereOrderId($record->id)
+                            ->exists()
+                    )
+                    ->form([
+                        Textarea::make('comment')
+                            ->maxLength(65_535)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(static function (array $data, Order $record): void {
+                        Delivery::where([
+                            'order_id' => $record->id,
+                            'status'   => DeliveryStatus::STASHED->value,
+                            'user_id'  => auth()->id(),
+                            'ended_at' => null,
+                        ])
+                            ->update([
+                                'status'      => DeliveryStatus::IN_PROGRESS,
+                                'location_id' => Location::whereDistrictId($record->client->district_id)
+                                    ->where('name', 'like', 'In progress%')
+                                    ->firstOrFail('id')->id,
+                                'comment' => $data['comment'],
+                            ]);
+                        Notification::make()
+                            ->title('requested cargo delivered')
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('Make delivery')
                     ->requiresConfirmation()
                     ->button()
@@ -230,7 +310,7 @@ class OrderResource extends Resource
                         static fn (Order $record) => Delivery::query()
                             ->whereIn(
                                 'status',
-                                [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()]
+                                [DeliveryStatus::IN_PROGRESS->value, DeliveryStatus::STASHED->value]
                             )
                             ->whereUserId(auth()->id())
                             ->whereOrderId($record->id)
@@ -241,7 +321,10 @@ class OrderResource extends Resource
                             'order_id' => $record->id,
                             'user_id'  => auth()->id(),
                             'ended_at' => null,
-                        ])
+                        ])->whereIn(
+                            'status',
+                            [DeliveryStatus::IN_PROGRESS->value, DeliveryStatus::STASHED->value]
+                        )
                             ->update([
                                 'ended_at'    => now('Europe/London'),
                                 'status'      => DeliveryStatus::COMPLETE,
@@ -254,10 +337,8 @@ class OrderResource extends Resource
                     }),
             ])
             ->bulkActions([
-                BulkActionGroup::make([
-                    AcceptOrderBulkAction::make(),
-                    CompleteOrderBulkAction::make(),
-                ]),
+                AcceptOrderBulkAction::make(),
+                CompleteOrderBulkAction::make(),
             ])
             ->emptyStateActions([
                 CreateAction::make(),

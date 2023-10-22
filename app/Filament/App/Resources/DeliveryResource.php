@@ -10,6 +10,7 @@ use App\Filament\App\Resources\DeliveryResource\Pages\EditDelivery;
 use App\Filament\App\Resources\DeliveryResource\Pages\ListDeliveries;
 use App\Filament\Resources\OrderResource;
 use App\Models\Delivery;
+use App\Models\Location;
 use App\Models\Order;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Placeholder;
@@ -233,6 +234,49 @@ class DeliveryResource extends Resource
                             'status'      => DeliveryStatus::LOST,
                             'location_id' => $record->order->client_id,
                             'comment'     => $data['comment'],
+                        ])),
+                Action::make('Stash')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('info')
+                    ->visible(
+                        static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
+                    )
+                    ->form([
+                        Select::make('location_id')
+                            ->searchable()
+                            ->relationship('location', 'name')
+                            ->loadingMessage('Loading locations...')
+                            ->required(),
+                        Textarea::make('comment')
+                            ->maxLength(65_535)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(static fn (array $data, Delivery $record) => $record
+                        ->update([
+                            'status'      => DeliveryStatus::STASHED,
+                            'location_id' => $data['location_id'],
+                            'comment'     => $data['comment'],
+                        ])),
+                Action::make('Continue')
+                    ->requiresConfirmation()
+                    ->button()
+                    ->color('info')
+                    ->visible(
+                        static fn (Delivery $record): bool => $record->status === DeliveryStatus::STASHED
+                    )
+                    ->form([
+                        Textarea::make('comment')
+                            ->maxLength(65_535)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(static fn (array $data, Delivery $record) => $record
+                        ->update([
+                            'status'      => DeliveryStatus::IN_PROGRESS,
+                            'location_id' => Location::whereDistrictId($record->order->client->district_id)
+                                ->where('name', 'like', 'In progress%')
+                                ->firstOrFail('id')->id,
+                            'comment' => $data['comment'],
                         ])),
             ])
             ->bulkActions([
