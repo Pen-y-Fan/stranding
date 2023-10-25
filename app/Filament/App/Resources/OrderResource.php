@@ -23,10 +23,9 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -148,6 +147,20 @@ class OrderResource extends Resource
                             ->orderBy('name')
                             ->pluck('name', 'id')
                     ),
+                // WIP - Trying a select, on a HasMany, this didn't work on 'all' may need an early 'return null' on
+                // empty $data.
+                /*
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(
+                        DeliveryStatus::class
+                    )
+                    ->query(static fn (Builder $query, array $data) => $query->whereHas(
+                        'userDeliveries',
+                        static fn (Builder $query) => $query->whereIn('status', $data)
+                            ->whereUserId(auth()->id())
+                    )),
+                */
                 // status
                 Filter::make('In progress')
                     ->label(DeliveryStatus::IN_PROGRESS->getLabel())
@@ -191,7 +204,7 @@ class OrderResource extends Resource
                         'userDeliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::LOST->value)
                     )),
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Action::make('Take on order')
                     ->requiresConfirmation()
