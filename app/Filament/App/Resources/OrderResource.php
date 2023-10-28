@@ -95,7 +95,7 @@ class OrderResource extends Resource
                     ->toggleable()
                     ->sortable(),
                 TextColumn::make('destination.district.name')
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('deliveryCategory.name')
                     ->wrap()
@@ -116,11 +116,10 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                // District
+                // district
                 SelectFilter::make('districts')
                     ->relationship('districts', 'name', static fn (Builder $query) => $query->whereHas('locations'))
                     ->label('District'),
-
                 // client
                 SelectFilter::make('client_id')
                     ->label('Client')
@@ -147,63 +146,42 @@ class OrderResource extends Resource
                             ->orderBy('name')
                             ->pluck('name', 'id')
                     ),
-                // WIP - Trying a select, on a HasMany, this didn't work on 'all' may need an early 'return null' on
-                // empty $data.
-                /*
-                SelectFilter::make('status')
-                    ->label('Status')
+                // delivery status
+                SelectFilter::make('deliveries')
+                    ->label('Delivery status')
                     ->options(
                         DeliveryStatus::class
                     )
-                    ->query(static fn (Builder $query, array $data) => $query->whereHas(
-                        'userDeliveries',
-                        static fn (Builder $query) => $query->whereIn('status', $data)
-                            ->whereUserId(auth()->id())
-                    )),
-                */
-                // status
-                Filter::make('In progress')
-                    ->label(DeliveryStatus::IN_PROGRESS->getLabel())
-                    ->checkbox()
-                    ->query(static fn (Builder $query) => $query->whereHas(
-                        'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::IN_PROGRESS->value)
-                            ->whereUserId(auth()->id())
-                    )),
-                //     case FAILED      = 'Failed';
-                Filter::make('Failed')
-                    ->label(DeliveryStatus::FAILED->getLabel())
-                    ->checkbox()
-                    ->query(static fn (Builder $query) => $query->whereHas(
-                        'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::FAILED->value)
-                    )),
-                //    case COMPLETE    = 'Complete';
-                Filter::make('Complete')
-                    ->label(DeliveryStatus::COMPLETE->getLabel())
-                    ->checkbox()
-                    ->query(static fn (Builder $query) => $query->whereHas(
-                        'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE->value)
-                    )),
-
-                //    case STASHED     = 'Stashed';
-                Filter::make('Stashed')
-                    ->label(DeliveryStatus::STASHED->getLabel())
-                    ->checkbox()
-                    ->query(static fn (Builder $query) => $query->whereHas(
-                        'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::STASHED->value)
-                    )),
-
-                //    case LOST        = 'Lost';
-                Filter::make('Lost')
-                    ->label(DeliveryStatus::LOST->getLabel())
-                    ->checkbox()
-                    ->query(static fn (Builder $query) => $query->whereHas(
-                        'userDeliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::LOST->value)
-                    )),
+                    ->query(static fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['value'],
+                            static fn (Builder $query, $value): Builder => $query->whereHas(
+                                'userDeliveries',
+                                static fn (Builder $query) => $query->where('status', $value)
+                            )
+                        )),
+                // completion status
+                SelectFilter::make('completion')
+                    ->label('Completion status')
+                    ->options([
+                        'complete'   => 'Complete',
+                        'incomplete' => 'Incomplete',
+                    ])
+                    ->query(static fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['value'],
+                            static fn (Builder $query, $value): Builder => $value === 'complete'
+                            ?
+                            $query->whereHas(
+                                'userDeliveries',
+                                static fn (Builder $query): Builder => $query->where('status', DeliveryStatus::COMPLETE)
+                            )
+                                :
+                                $query->whereDoesntHave(
+                                    'userDeliveries',
+                                    static fn (Builder $query): Builder => $query->where('status', DeliveryStatus::COMPLETE)
+                                )
+                        )),
             ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Action::make('Take on order')
