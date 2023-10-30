@@ -24,9 +24,7 @@ class ListOrders extends ListRecords
             return;
         }
 
-        foreach (OrderStatus::toArrayString() as $item) {
-            $this->tableFilters[$item]['isActive'] = $filter === $item;
-        }
+        $this->tableFilters['deliveries']['value'] = $filter;
     }
 
     protected function getHeaderActions(): array
