@@ -7,7 +7,6 @@ namespace App\Filament\App\Resources;
 use App\Enum\DeliveryStatus;
 use App\Filament\App\Actions\AcceptOrderBulkAction;
 use App\Filament\App\Actions\CompleteOrderBulkAction;
-use App\Filament\App\Resources\OrderResource\Pages\CreateOrder;
 use App\Filament\App\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\App\Resources\OrderResource\Pages\ListOrders;
 use App\Filament\App\Resources\OrderResource\Pages\ViewOrder;
@@ -330,9 +329,7 @@ class OrderResource extends Resource
                 AcceptOrderBulkAction::make(),
                 CompleteOrderBulkAction::make(),
             ])
-            ->emptyStateActions([
-                CreateAction::make(),
-            ]);
+            ->emptyStateActions([]);
     }
 
     public static function getRelations(): array
@@ -345,10 +342,9 @@ class OrderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListOrders::route('/'),
-            'create' => CreateOrder::route('/create'),
-            'view'   => ViewOrder::route('/{record}'),
-            'edit'   => EditOrder::route('/{record}/edit'),
+            'index' => ListOrders::route('/'),
+            'view'  => ViewOrder::route('/{record}'),
+            'edit'  => EditOrder::route('/{record}/edit'),
         ];
     }
 
