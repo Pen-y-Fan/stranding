@@ -69,15 +69,15 @@ class LocationResource extends Resource
                         ->schema([
                             Placeholder::make('created_at')
                                 ->label(__('Created at'))
-                                ->content(static fn (?Location $location): ?string => $location?->created_at?->diffForHumans()),
+                                ->content(static fn (?Location $record): ?string => $record?->created_at?->diffForHumans()),
                             Placeholder::make('updated_at')
                                 ->label(__('Last modified at'))
-                                ->content(static fn (?Location $location): ?string => $location?->updated_at?->diffForHumans()),
+                                ->content(static fn (?Location $record): ?string => $record?->updated_at?->diffForHumans()),
                         ])
                         ->columnSpan([
                             'lg' => 1,
                         ])
-                        ->hidden(static fn (?Location $location): bool => ! $location instanceof Location),
+                        ->hidden(static fn (?Location $record): bool => ! $record instanceof Location),
                 ]
             )
             ->columns([

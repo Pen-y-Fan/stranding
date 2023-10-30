@@ -53,15 +53,15 @@ class DistrictResource extends Resource
                         ->schema([
                             Placeholder::make('created_at')
                                 ->label(__('Created at'))
-                                ->content(static fn (?District $delivery): ?string => $delivery?->created_at?->diffForHumans()),
+                                ->content(static fn (?District $record): ?string => $record?->created_at?->diffForHumans()),
                             Placeholder::make('updated_at')
                                 ->label(__('Last modified at'))
-                                ->content(static fn (?District $delivery): ?string => $delivery?->updated_at?->diffForHumans()),
+                                ->content(static fn (?District $record): ?string => $record?->updated_at?->diffForHumans()),
                         ])
                         ->columnSpan([
                             'lg' => 1,
                         ])
-                        ->hidden(static fn (?District $delivery): bool => ! $delivery instanceof District),
+                        ->hidden(static fn (?District $record): bool => ! $record instanceof District),
                 ]
             )
             ->columns([

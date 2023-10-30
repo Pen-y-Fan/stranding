@@ -51,15 +51,15 @@ class DeliveryCategoryResource extends Resource
                         ->schema([
                             Placeholder::make('created_at')
                                 ->label(__('Created at'))
-                                ->content(static fn (?DeliveryCategory $delivery): ?string => $delivery?->created_at?->diffForHumans()),
+                                ->content(static fn (?DeliveryCategory $record): ?string => $record?->created_at?->diffForHumans()),
                             Placeholder::make('updated_at')
                                 ->label(__('Last modified at'))
-                                ->content(static fn (?DeliveryCategory $delivery): ?string => $delivery?->updated_at?->diffForHumans()),
+                                ->content(static fn (?DeliveryCategory $record): ?string => $record?->updated_at?->diffForHumans()),
                         ])
                         ->columnSpan([
                             'lg' => 1,
                         ])
-                        ->hidden(static fn (?DeliveryCategory $delivery): bool => ! $delivery instanceof DeliveryCategory),
+                        ->hidden(static fn (?DeliveryCategory $record): bool => ! $record instanceof DeliveryCategory),
                 ]
             )
             ->columns([

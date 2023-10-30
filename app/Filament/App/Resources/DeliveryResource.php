@@ -55,7 +55,7 @@ class DeliveryResource extends Resource
                             Select::make('order_id')
                                 ->label('Order')
                                 ->searchable()
-                                ->options(static fn (?Delivery $delivery): array => Order::all()
+                                ->options(static fn (): array => Order::limit(10)->get()
                                     ->map(static fn (Order $order): array => [
                                         'id'          => $order->id,
                                         'number-name' => sprintf('%s %s', $order->number, $order->name),
@@ -65,7 +65,7 @@ class DeliveryResource extends Resource
                                 ->getSearchResultsUsing(static fn (string $search): array => Order::query()
                                     ->where('name', 'like', sprintf('%%%s%%', $search))
                                     ->orWhere('number', $search)
-                                    ->limit(50)
+                                    ->limit(10)
                                     ->get()
                                     ->map(static fn (Order $order): array => [
                                         'id'          => $order->id,
@@ -82,23 +82,21 @@ class DeliveryResource extends Resource
                                 )
                                 ->loadingMessage('Loading orders...')
                                 ->required(),
-                            //                            Select::make('user_id')
-                            //                                ->relationship('user', 'name')
-                            //                                ->loadingMessage('Loading users...')
-                            //                                ->required(),
                             Select::make('location_id')
                                 ->searchable()
                                 ->relationship('location', 'name')
                                 ->loadingMessage('Loading locations...')
                                 ->required(),
                             DateTimePicker::make('started_at')
+                                ->default(now('Europe/London')->format('Y-m-d H:i:s'))
                                 ->required(),
                             DateTimePicker::make('ended_at'),
                             Radio::make('status')
                                 ->options(DeliveryStatus::toArrayString())
+                                ->default(DeliveryStatus::IN_PROGRESS)
                                 ->required(),
                             Textarea::make('comment')
-                                ->maxLength(65535)
+                                ->maxLength(65_535)
                                 ->columnSpanFull(),
                         ])
                         ->columnSpan([
@@ -108,15 +106,15 @@ class DeliveryResource extends Resource
                         ->schema([
                             Placeholder::make('created_at')
                                 ->label(__('Created at'))
-                                ->content(static fn (?Delivery $delivery): ?string => $delivery?->created_at?->diffForHumans()),
+                                ->content(static fn (?Delivery $record): ?string => $record?->created_at?->diffForHumans()),
                             Placeholder::make('updated_at')
                                 ->label(__('Last modified at'))
-                                ->content(static fn (?Delivery $delivery): ?string => $delivery?->updated_at?->diffForHumans()),
+                                ->content(static fn (?Delivery $record): ?string => $record?->updated_at?->diffForHumans()),
                         ])
                         ->columnSpan([
                             'lg' => 1,
                         ])
-                        ->hidden(static fn (?Delivery $delivery): bool => ! $delivery instanceof Delivery),
+                        ->hidden(static fn (?Delivery $record): bool => ! $record instanceof Delivery),
                 ]
             )
             ->columns([
@@ -130,15 +128,15 @@ class DeliveryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('order.number')
-                    ->url(static fn (Delivery $delivery): string => OrderResource::getUrl('view', [
-                        'record' => $delivery->order->id,
+                    ->url(static fn (Delivery $record): string => OrderResource::getUrl('view', [
+                        'record' => $record->order->id,
                     ]))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('order.name')
                     ->wrap()
-                    ->url(static fn (Delivery $delivery): string => OrderResource::getUrl('view', [
-                        'record' => $delivery->order->id,
+                    ->url(static fn (Delivery $record): string => OrderResource::getUrl('view', [
+                        'record' => $record->order->id,
                     ]))
                     ->searchable()
                     ->sortable(),
