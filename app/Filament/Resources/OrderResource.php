@@ -170,15 +170,6 @@ class OrderResource extends Resource
                         'deliveries',
                         static fn (Builder $query) => $query->where('status', DeliveryStatus::STASHED->getLabel())
                     )),
-
-                //    case LOST        = 'Lost';
-                Filter::make('Lost')
-                    ->label(DeliveryStatus::LOST->getLabel())
-                    ->checkbox()
-                    ->query(static fn (Builder $query) => $query->orWhereHas(
-                        'deliveries',
-                        static fn (Builder $query) => $query->where('status', DeliveryStatus::LOST->getLabel())
-                    )),
             ])
             ->actions([
                 // start new delivery

@@ -213,26 +213,6 @@ class DeliveryResource extends Resource
                             'location_id' => $record->order->destination_id,
                             'comment'     => $data['comment'],
                         ])),
-                Action::make('Lost')
-                    ->requiresConfirmation()
-                    ->button()
-                    ->color('warning')
-                    ->visible(
-                        static fn (Delivery $record): bool => $record->status === DeliveryStatus::IN_PROGRESS
-                            || $record->status                                === DeliveryStatus::STASHED
-                    )
-                    ->form([
-                        Textarea::make('comment')
-                            ->maxLength(65_535)
-                            ->columnSpanFull(),
-                    ])
-                    ->action(static fn (array $data, Delivery $record) => $record
-                        ->update([
-                            'ended_at'    => now(),
-                            'status'      => DeliveryStatus::LOST,
-                            'location_id' => $record->order->client_id,
-                            'comment'     => $data['comment'],
-                        ])),
                 Action::make('Stash')
                     ->requiresConfirmation()
                     ->button()

@@ -15,7 +15,6 @@ enum DeliveryStatus: string implements HasLabel, HasColor, HasIcon
     case FAILED      = 'Failed';
     case COMPLETE    = 'Complete';
     case STASHED     = 'Stashed';
-    case LOST        = 'Lost';
 
     public function getLabel(): ?string
     {
@@ -24,7 +23,6 @@ enum DeliveryStatus: string implements HasLabel, HasColor, HasIcon
             self::FAILED      => 'Failed',
             self::COMPLETE    => 'Complete',
             self::STASHED     => 'Stashed',
-            self::LOST        => 'Lost',
         };
     }
 
@@ -35,7 +33,6 @@ enum DeliveryStatus: string implements HasLabel, HasColor, HasIcon
             self::FAILED      => 'danger',
             self::COMPLETE    => 'success',
             self::STASHED     => 'gray',
-            self::LOST        => 'primary',
         };
     }
 
@@ -46,7 +43,6 @@ enum DeliveryStatus: string implements HasLabel, HasColor, HasIcon
             self::FAILED      => 'heroicon-o-x-circle',
             self::COMPLETE    => 'heroicon-o-shield-check',
             self::STASHED     => 'heroicon-o-information-circle',
-            self::LOST        => 'heroicon-o-x-mark',
         };
     }
 
@@ -57,7 +53,6 @@ enum DeliveryStatus: string implements HasLabel, HasColor, HasIcon
             self::FAILED->getLabel()      => self::FAILED,
             self::COMPLETE->getLabel()    => self::COMPLETE,
             self::STASHED->getLabel()     => self::STASHED,
-            self::LOST->getLabel()        => self::LOST,
         ];
     }
 
@@ -68,7 +63,6 @@ enum DeliveryStatus: string implements HasLabel, HasColor, HasIcon
             self::FAILED->getLabel()      => self::FAILED->getLabel(),
             self::COMPLETE->getLabel()    => self::COMPLETE->getLabel(),
             self::STASHED->getLabel()     => self::STASHED->getLabel(),
-            self::LOST->getLabel()        => self::LOST->getLabel(),
         ];
     }
 }

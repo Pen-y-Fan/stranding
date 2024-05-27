@@ -102,30 +102,6 @@ class ViewOrder extends ViewRecord
                         'status'      => DeliveryStatus::FAILED,
                         'location_id' => $record->destination_id,
                     ])),
-            Action::make('Lost delivery')
-                ->requiresConfirmation()
-                ->button()
-                ->color('warning')
-                ->visible(
-                    static fn (Order $record) => Delivery::query()
-                        ->whereIn(
-                            'status',
-                            [DeliveryStatus::IN_PROGRESS->getLabel(), DeliveryStatus::STASHED->getLabel()]
-                        )
-                        ->whereUserId(auth()->id())
-                        ->whereOrderId($record->id)
-                        ->exists()
-                )
-                ->action(static fn (Order $record) => Delivery::where([
-                    'order_id' => $record->id,
-                    'user_id'  => auth()->id(),
-                    'ended_at' => null,
-                ])
-                    ->update([
-                        'ended_at'    => now(),
-                        'status'      => DeliveryStatus::LOST,
-                        'location_id' => $record->client_id,
-                    ])),
         ];
     }
 }
