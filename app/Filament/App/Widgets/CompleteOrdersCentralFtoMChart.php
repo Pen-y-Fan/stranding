@@ -30,12 +30,17 @@ class CompleteOrdersCentralFtoMChart extends ChartWidget
             ->withCount([
                 'clientOrders as incomplete_orders_count' => static fn (Builder $query) => $query->whereDoesntHave(
                     'deliveries',
-                    static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
+                    static fn (Builder $query) => $query->whereIn('status', [DeliveryStatus::COMPLETE, DeliveryStatus::STASHED, DeliveryStatus::IN_PROGRESS])
                         ->where('user_id', auth()->id())
                 ),
                 'clientOrders as complete_orders_count' => static fn (Builder $query) => $query->whereHas(
                     'deliveries',
                     static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
+                        ->where('user_id', auth()->id())
+                ),
+                'clientOrders as accepted_orders_count' => static fn (Builder $query) => $query->whereHas(
+                    'deliveries',
+                    static fn (Builder $query) => $query->whereIn('status', [DeliveryStatus::STASHED, DeliveryStatus::IN_PROGRESS])
                         ->where('user_id', auth()->id())
                 ),
             ])
@@ -48,6 +53,12 @@ class CompleteOrdersCentralFtoMChart extends ChartWidget
                     'data'            => $ordersByLocation->map(static fn (Location $location) => $location->complete_orders_count),
                     'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
                     'borderColor'     => 'rgba(75, 192, 192, 0.7)',
+                ],
+                [
+                    'label'           => 'In progress',
+                    'data'            => $ordersByLocation->map(static fn (Location $location): int => $location->accepted_orders_count ?? 0),
+                    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+                    'borderColor'     => 'rgba(54, 162, 235, 0.7)',
                 ],
                 [
                     'label'           => 'Incomplete',

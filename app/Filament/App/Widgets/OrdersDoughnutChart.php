@@ -23,20 +23,20 @@ class OrdersDoughnutChart extends ChartWidget
 
         $incompleteCount = Order::whereDoesntHave(
             'deliveries',
-            static fn (Builder $query): Builder => $query->where('status', DeliveryStatus::COMPLETE)
+            static fn (Builder $query) => $query->whereIn('status', [DeliveryStatus::COMPLETE, DeliveryStatus::STASHED, DeliveryStatus::IN_PROGRESS])
                 ->where('user_id', auth()->id())
         )->count();
 
         $inProgress = Order::whereHas(
             'deliveries',
-            static fn (Builder $query): Builder => $query->whereNull('ended_at')
+            static fn (Builder $query) => $query->whereIn('status', [DeliveryStatus::STASHED, DeliveryStatus::IN_PROGRESS])
                 ->where('user_id', auth()->id())
         )->count();
 
         return [
             'datasets' => [
                 [
-                    'data'            => [$completeCount, $inProgress, $incompleteCount - $inProgress],
+                    'data'            => [$completeCount, $inProgress, $incompleteCount],
                     'backgroundColor' => ['rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
                     'borderColor'     => ['rgba(75, 192, 192, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)'],
                 ],
