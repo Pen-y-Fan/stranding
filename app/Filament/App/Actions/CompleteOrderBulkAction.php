@@ -23,7 +23,7 @@ class CompleteOrderBulkAction extends BulkAction
     {
         parent::setUp();
 
-        $this->label('Make delivery');
+        $this->label('Deliver');
 
         $this->modalHeading('Deliver requested cargo');
 
@@ -58,7 +58,7 @@ class CompleteOrderBulkAction extends BulkAction
 
     public static function getDefaultName(): ?string
     {
-        return 'Make delivery';
+        return 'Deliver';
     }
 
     protected function makeDelivery(Order $order): void

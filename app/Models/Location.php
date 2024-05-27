@@ -123,7 +123,6 @@ class Location extends Model
         return $this->hasMany(Order::class, 'client_id')
             ->whereDoesntHave(
                 'completeDeliveries'
-                //                static fn (Builder $query) => $query->where('status', DeliveryStatus::COMPLETE)
             );
     }
 

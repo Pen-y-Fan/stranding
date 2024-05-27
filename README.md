@@ -86,7 +86,6 @@ The database will need to be manually created e.g.
 ```shell
 mysql -u YourDatabaseUserName (root)
 CREATE DATABASE stranding CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE electricity CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 exit
 ```
 
@@ -261,6 +260,10 @@ Basic CRUD operations. ✅
 
 ```shell
 php artisan make:filament-resource Location --generate --view
+php artisan make:filament-resource Location --generate --view --panel=app
+php artisan make:filament-relation-manager 
+php artisan make:filament-relation-manager LocationResource clientOrders name --view --panel=app
+php artisan make:filament-relation-manager LocationResource destinationOrders name --view --panel=app
 ```
 
 Basic CRUD operations.
@@ -322,3 +325,13 @@ Basic CRUD operations.
 - Move Actions to the relent Resource folder (App > Actions >... to App > Resources > OrderResource > Actions > ... ) 
 - Add source and licence information 
 - Add Notification on actions and listeners to Widgets for changes in orders and deliveries.
+
+Rename:
+
+- Take on order > Accept ✅
+- Make delivery > Deliver ✅
+- x items accepted > order assigned ✅
+
+Notes: 
+
+Update graphs to show in progress count. ✅

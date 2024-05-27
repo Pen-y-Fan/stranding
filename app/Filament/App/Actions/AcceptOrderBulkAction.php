@@ -26,20 +26,20 @@ class AcceptOrderBulkAction extends BulkAction
     {
         parent::setUp();
 
-        $this->label('Take on orders');
+        $this->label('Accept');
 
         $this->modalHeading('Take on standard delivery orders');
 
-        $this->modalSubmitActionLabel('Take');
+        $this->modalSubmitActionLabel('Accept');
 
         $this->successNotificationTitle(fn (): string => sprintf(
-            '%s %s taken for delivery',
+            '%s %s assigned',
             $this->acceptCount,
             Str::plural('order', $this->acceptCount)
         ));
         $this->failureNotificationTitle(
             fn (): string => sprintf(
-                '%s %s already taken for delivery',
+                '%s %s already assigned',
                 $this->failCount,
                 Str::plural('order', $this->failCount)
             )
@@ -79,7 +79,7 @@ class AcceptOrderBulkAction extends BulkAction
 
     public static function getDefaultName(): ?string
     {
-        return 'Take on orders';
+        return 'Accept';
     }
 
     protected function takeOrder(Order $order): void

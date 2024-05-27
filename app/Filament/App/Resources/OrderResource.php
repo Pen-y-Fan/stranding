@@ -7,6 +7,8 @@ namespace App\Filament\App\Resources;
 use App\Enum\DeliveryStatus;
 use App\Filament\App\Actions\AcceptOrderBulkAction;
 use App\Filament\App\Actions\CompleteOrderBulkAction;
+use App\Filament\App\Resources\LocationResource\RelationManagers\ClientOrdersRelationManager;
+use App\Filament\App\Resources\LocationResource\RelationManagers\DestinationOrdersRelationManager;
 use App\Filament\App\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\App\Resources\OrderResource\Pages\ListOrders;
 use App\Filament\App\Resources\OrderResource\Pages\ViewOrder;
@@ -22,7 +24,6 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
@@ -70,6 +71,7 @@ class OrderResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('number')
+                    ->size(TextColumn\TextColumnSize::Large)
                     ->numeric()
                     ->sortable()
                     ->searchable(),
@@ -85,10 +87,18 @@ class OrderResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('client.name')
+                    ->visibleOn([ListOrders::class, DestinationOrdersRelationManager::class])
+                    ->url(static fn (Order $record): string => LocationResource::getUrl('view', [
+                        'record' => $record->client_id,
+                    ]))
                     ->wrap()
                     ->toggleable()
                     ->sortable(),
                 TextColumn::make('destination.name')
+                    ->visibleOn([ListOrders::class, ClientOrdersRelationManager::class])
+                    ->url(static fn (Order $record): string => LocationResource::getUrl('view', [
+                        'record' => $record->destination_id,
+                    ]))
                     ->wrap()
                     ->toggleable()
                     ->sortable(),
@@ -117,10 +127,12 @@ class OrderResource extends Resource
                 // district
                 SelectFilter::make('districts')
                     ->relationship('districts', 'name', static fn (Builder $query) => $query->whereHas('locations'))
+                    ->visibleOn(ListOrders::class)
                     ->label('District'),
                 // client
                 SelectFilter::make('client_id')
                     ->label('Client')
+                    ->visibleOn([ListOrders::class, DestinationOrdersRelationManager::class])
                     ->options(
                         Location::query()
                             ->orderBy('name')
@@ -130,6 +142,7 @@ class OrderResource extends Resource
                 // destination
                 SelectFilter::make('destination_id')
                     ->label('Destination')
+                    ->visibleOn([ListOrders::class, ClientOrdersRelationManager::class])
                     ->options(
                         Location::query()
                             ->orderBy('name')
@@ -182,10 +195,15 @@ class OrderResource extends Resource
                         )),
             ], layout: FiltersLayout::AboveContent)
             ->actions([
-                Action::make('Take on order')
-                    ->requiresConfirmation()
+                Action::make('Accept')
+//                    ->requiresConfirmation()
                     ->button()
                     ->color('info')
+                    ->form([
+                        Textarea::make('comment')
+                            ->maxLength(65_535)
+                            ->columnSpanFull(),
+                    ])
                     ->visible(
                         static fn (Order $record): bool => ! Delivery::query()
                             ->whereIn(
@@ -196,7 +214,7 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->action(static function (Order $record): void {
+                    ->action(static function (array $data, Order $record): void {
                         Delivery::create([
                             'order_id'    => $record->id,
                             'user_id'     => auth()->id(),
@@ -206,36 +224,43 @@ class OrderResource extends Resource
                             'location_id' => Location::whereDistrictId($record->client->district_id)
                                 ->where('name', 'like', 'In progress%')
                                 ->firstOrFail('id')->id,
+                            'comment' => $data['comment'],
                         ]);
                         Notification::make()
                             ->title('Standard delivery order taken')
                             ->success()
                             ->send();
                     }),
-                Action::make('Stash delivery')
+                Action::make('Stash')
                     ->requiresConfirmation()
                     ->button()
                     ->color('warning')
                     ->visible(
                         static fn (Order $record) => Delivery::query()
-                            ->where(
-                                'status',
-                                DeliveryStatus::IN_PROGRESS->value
-                            )
+                            ->where('status', DeliveryStatus::IN_PROGRESS->value)
                             ->whereUserId(auth()->id())
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->form([
-                        Select::make('location_id')
-                            ->searchable()
-                            ->relationship('client', 'name')
-                            ->loadingMessage('Loading locations...')
-                            ->required(),
-                        Textarea::make('comment')
-                            ->maxLength(65_535)
-                            ->columnSpanFull(),
-                    ])
+                    ->form(
+                        static function (array $data, Order $record): array {
+                            $delivery = Delivery::query()
+                                ->where('status', DeliveryStatus::IN_PROGRESS->value)
+                                ->whereUserId(auth()->id())
+                                ->whereOrderId($record->id)
+                                ->first();
+
+                            return [
+                                Select::make('location_id')
+                                    ->relationship('client', 'name')
+                                    ->required(),
+                                Textarea::make('comment')
+                                    ->maxLength(65_535)
+                                    ->default($delivery->comment ?? '')
+                                    ->columnSpanFull(),
+                            ];
+                        }
+                    )
                     ->action(static function (array $data, Order $record): void {
                         Delivery::where([
                             'order_id' => $record->id,
@@ -249,16 +274,15 @@ class OrderResource extends Resource
                                 'comment'     => $data['comment'],
                             ]);
                         Notification::make()
-                            ->title('requested cargo delivered')
+                            ->title('cargo delivered')
                             ->success()
                             ->send();
                     }),
-                Action::make('Continue delivery')
-                    ->requiresConfirmation()
+                Action::make('Continue')
                     ->button()
                     ->color('info')
                     ->visible(
-                        static fn (Order $record) => Delivery::query()
+                        static fn (array $data, Order $record) => Delivery::query()
                             ->where(
                                 'status',
                                 DeliveryStatus::STASHED->value
@@ -267,11 +291,22 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->form([
-                        Textarea::make('comment')
-                            ->maxLength(65_535)
-                            ->columnSpanFull(),
-                    ])
+                    ->form(
+                        static function (array $data, Order $record): array {
+                            $delivery = Delivery::query()
+                                ->where('status', DeliveryStatus::STASHED->value)
+                                ->whereUserId(auth()->id())
+                                ->whereOrderId($record->id)
+                                ->first();
+
+                            return [
+                                Textarea::make('comment')
+                                    ->maxLength(65_535)
+                                    ->default($delivery->comment ?? '')
+                                    ->columnSpanFull(),
+                            ];
+                        }
+                    )
                     ->action(static function (array $data, Order $record): void {
                         Delivery::where([
                             'order_id' => $record->id,
@@ -287,12 +322,84 @@ class OrderResource extends Resource
                                 'comment' => $data['comment'],
                             ]);
                         Notification::make()
-                            ->title('requested cargo delivered')
+                            ->title('order delivered')
                             ->success()
                             ->send();
                     }),
-                Action::make('Make delivery')
+                Action::make('Fail')
                     ->requiresConfirmation()
+                    ->button()
+                    ->color('danger')
+                    ->visible(
+                        static fn (Order $record) => Delivery::query()
+                            ->whereIn(
+                                'status',
+                                [DeliveryStatus::IN_PROGRESS->value, DeliveryStatus::STASHED->value]
+                            )
+                            ->whereUserId(auth()->id())
+                            ->whereOrderId($record->id)
+                            ->exists()
+                    )
+                    ->form(
+                        static function (array $data, Order $record): array {
+                            $delivery = Delivery::query()
+                                ->whereIn(
+                                    'status',
+                                    [DeliveryStatus::IN_PROGRESS->value, DeliveryStatus::STASHED->value]
+                                )
+                                ->whereUserId(auth()->id())
+                                ->whereOrderId($record->id)
+                                ->first();
+
+                            return [
+                                Textarea::make('comment')
+                                    ->maxLength(65_535)
+                                    ->default($delivery->comment ?? '')
+                                    ->columnSpanFull(),
+                            ];
+                        }
+                    )
+
+                    ->action(static function (array $data, Order $record): void {
+                        Delivery::where([
+                            'order_id' => $record->id,
+                            'user_id'  => auth()->id(),
+                            'ended_at' => null,
+                        ])->whereIn(
+                            'status',
+                            [DeliveryStatus::IN_PROGRESS->value, DeliveryStatus::STASHED->value]
+                        )
+                            ->update([
+                                'ended_at'    => now('Europe/London'),
+                                'status'      => DeliveryStatus::FAILED,
+                                'location_id' => $record->client_id,
+                                'comment'     => $data['comment'],
+                            ]);
+                        Notification::make()
+                            ->title('order failed')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('Deliver')
+                    ->form(
+                        static function (array $data, Order $record): array {
+                            $delivery = Delivery::query()
+                                ->whereIn(
+                                    'status',
+                                    [DeliveryStatus::IN_PROGRESS->value, DeliveryStatus::STASHED->value]
+                                )
+                                ->whereUserId(auth()->id())
+                                ->whereOrderId($record->id)
+                                ->first();
+
+                            return [
+                                Textarea::make('comment')
+                                    ->maxLength(65_535)
+                                    ->default($delivery->comment ?? '')
+                                    ->columnSpanFull(),
+                            ];
+                        }
+                    )
                     ->button()
                     ->color('success')
                     ->visible(
@@ -305,7 +412,7 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->action(static function (Order $record): void {
+                    ->action(static function (array $data, Order $record): void {
                         Delivery::where([
                             'order_id' => $record->id,
                             'user_id'  => auth()->id(),
@@ -318,9 +425,10 @@ class OrderResource extends Resource
                                 'ended_at'    => now('Europe/London'),
                                 'status'      => DeliveryStatus::COMPLETE,
                                 'location_id' => $record->client_id,
+                                'comment'     => $data['comment'],
                             ]);
                         Notification::make()
-                            ->title('requested cargo delivered')
+                            ->title('order delivered')
                             ->success()
                             ->send();
                     }),
