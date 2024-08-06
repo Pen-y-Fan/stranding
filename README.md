@@ -2,6 +2,36 @@
 
 Progress tracker for Death Stranding
 
+![screenshot-dashboard.png](./doc/screenshot-dashboard.png)
+
+## Purpose
+
+The purpose of the death standing tracker is to track all deliveries with the aim to help make all 540 in the game!
+
+Once setup login to the (https://stranding.test/app) using the seeded user **user@example.com** and password 
+**password**.
+
+### Dashboard
+
+The dashboard displays graphs for every location in the game. This makes it easier to identify locations to target, such
+as locations with a low delivery count. Later in the game its easy to identify locations with orders and complete
+locations.
+
+### Deliveries
+
+If any mistakes are made while taking an order the delivery can be edited. It is best to search by order number.
+
+### Locations
+
+When making multiple deliveries or collections from a location it can be useful to search by location and then switch
+between deliveries to and from the location.
+
+### Orders
+
+This is the main screen to search, take and make deliveries by order. Orders can also be taken and made in bulk using the 
+
+----
+
 ## Packages
 
 The following packages and plugins have been used:
@@ -161,177 +191,19 @@ Time: 00:01.599, Memory: 54.00 MB
 OK (39 tests, 214 assertions)
 ```
 
-## TODO
+## Contributing
 
-### Database:
+This is a **personal project**. Contributions are **not** required. Anyone interested in developing this project are
+welcome to fork or clone for your own use.
 
-#### district ✅
+## Credits
 
-- name (West, Central, East) ✅
+- [Michael Pritchard \(AKA Pen-y-Fan\)](https://github.com/pen-y-fan) original project
 
-#### location ✅
+## License
 
-- name (Capital Knot City etc.) ✅
-- district_id ✅
-- is_physical ✅
+MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-Note: Used for physical locations, clients and destinations, also used for delivery and drop off points, which can be
-pill boxes, use isPhysical() for the physical locations.
-
-#### delivery_category ✅
-
-- name (Delivery Time, Delivery Volume, Cargo Condition, Miscellaneous) ✅
-
-#### order ✅
-
-- number
-- name
-- client_id (locations)
-- destination_id (locations)
-- delivery_category_id
-- max_likes
-- weight
-
-#### order_user ✅
-
-- status OrderStatus Enum (unavailable, available, standby, in progress, complete) - this is the status of an order.
-- order_id }
-- user_id } unique
-
-#### delivery ✅
-
-- order_id
-- user_id
-- start_date (Date time)
-- end_date (Date time)
-- status (in progress, failed, complete, stashed) - this is the status of a delivery, not exactly the same as an order.
-- location_id current location of the delivery, default is 'In progress' + Other
-    - access via is_physical false on location
-- comment, if the order is stashed at a pill box leave the location or comment on a failure.
-
-### Admin panel
-
-#### Delivery
-
-```shell
-php artisan make:filament-resource Delivery --generate
-```
-
-Allow a delivery to be viewed and edited.
-
-Starting a delivery will be from the order page, with 'begin delivery' action. Possibly 'Complete delivery' will be on
-the Order view too.
-
-This view will allow deliveries to be filtered, by default 'In progress' and 'Stashed' deliveries will be shown.
-
-#### Order
-
-```shell
-php artisan make:filament-resource Order --generate --view
-```
-
-Allow an order to be viewed and edited. Orders can be filtered District (East and Central), Client, Destination. ✅
-
-TODO: Start new delivery action 🚧
-
-- check if there is already a delivery 'In Progress' or 'Stashed' and give the option to mark it lost or complete or
-  cancel
-- create a new delivery with the status of 'In Progress'
-
-Add view with relationship on Delivery and status 🚧
-
-#### Delivery Category
-
-```shell
-php artisan make:filament-resource DeliveryCategory --generate --view
-```
-
-Basic CRUD operations ✅
-
-#### District
-
-```shell
-php artisan make:filament-resource District --generate --view
-```
-
-Basic CRUD operations. ✅
-
-#### Location
-
-```shell
-php artisan make:filament-resource Location --generate --view
-php artisan make:filament-resource Location --generate --view --panel=app
-php artisan make:filament-relation-manager 
-php artisan make:filament-relation-manager LocationResource clientOrders name --view --panel=app
-php artisan make:filament-relation-manager LocationResource destinationOrders name --view --panel=app
-```
-
-Basic CRUD operations.
-
-### Logic
-
-- The default status for all orders is unavailable ✅
-- A user can list orders by client location and update the available orders ✅
-- A user can filter by destination location to attempt to 'batch up' orders ✅
-- A user can find an order, update the status to 'In progress', which will trigger the progress start_date ✅
-- A user can find an order, update the status to failed, which will update the delivery progress to failed (for stats)
-  and location to the order's client location. The order_user status will be changed to standby, as the user will not be
-  able to re-take the order immediately ✅
-- A user can find an order, update the status to complete, which will mark the progress to complete (for stats) and
-  update the status to complete ✅
-- A user can filter large orders which require Delivery Bot or Floating carrier ( > 200 kg < 600 kg)
-- A user can filter orders for trucks ( > 600 kg)
-- A user can stash a delivery in a private locker at a location or in a pill box, these can be 'other' with a comment on
-  the location.
-- A user can multi filter by status (e.g. unavailable & available) to allow delivery planning ✅
-- A user can view update a delivery to failed and give a reason for failure (e.g. must be raining)
-- A user can view past failed deliveries with the comment(s) why each delivery failed to help remind the reason and help
-  to succeed next time
-- A user can filter deliveries by district (Eastern / Central) so they may view deliveries in progress including stashed
-  deliveries ✅
-- A user can filter orders by district (Eastern / Central) so they may view orders ✅
-- Orders: Number, description, max likes and weight, then other stuff.... ✅
-
-## TODO
-
-- Correct Region
-    - East > Western ✅
-    - West > Eastern ✅
-- Delivery list:
-    - order number add url to Order show page ✅
-    - Add Actions (also added to Edit) ✅
-- Order list:
-    - Update wording of action, bulk action and confirmation ✅
-        - take on orders - take on standard delivery orders ✅
-        - make delivery - deliver requested cargo ✅
-    - make delivery badges url to delivery show (if possible) or url to filter delivery list by order.
-    - add visibility column as a dropdown
-    - add kg to weight and ≈ to Likes
-    - Add stash action, with location
-    - Add fail Action with option to add a comment for the reason (see ViewOrder)
-    - Add region filter (Eastern and Central)
-    - Investigate delivery filters for Order - change from tick to select or radio buttons
-        - Maybe add 'In progress' filter = delivery date null.
-- Order show:
-    - Add actions ✅
-    - show delivery history
-- Add stats / graph to Dashboard - deliveries per client with total (try stacked bar) ✅ 
-    - split Central A-E (10), F-M (9), N-W (10) ✅
-    - Add 'in progress' to Doughnut chart, reduce incomplete by in progress count. ✅
-- Add extra toggle column options (action?) 
-    - minimal (order, description, weight, likes),
-    - deliveries (order, description, weight, likes, client, destination)
-    - all
-- Move Actions to the relent Resource folder (App > Actions >... to App > Resources > OrderResource > Actions > ... ) 
-- Add source and licence information 
-- Add Notification on actions and listeners to Widgets for changes in orders and deliveries.
-
-Rename:
-
-- Take on order > Accept ✅
-- Make delivery > Deliver ✅
-- x items accepted > order assigned ✅
-
-Notes: 
-
-Update graphs to show in progress count. ✅
+The order data has been copied from
+the [Death stranding wiki](https://deathstranding.fandom.com/wiki/Orders) and is available under
+the [CC BY-SA](https://www.fandom.com/licensing) license.  
