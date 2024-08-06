@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\App\Resources;
 
 use App\Filament\App\Resources\LocationResource\Pages;
-
 use App\Filament\App\Resources\LocationResource\RelationManagers\ClientOrdersRelationManager;
 use App\Filament\App\Resources\LocationResource\RelationManagers\DestinationOrdersRelationManager;
 use App\Models\Location;
