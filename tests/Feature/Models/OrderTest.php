@@ -43,6 +43,7 @@ class OrderTest extends TestCase
         $data = [
             'number'               => 100,
             'name'                 => '[URGENT] Delivery: Tranquilizers',
+            'premium'              => '4 min. 45 sec. 2 pieces of cargo (S)',
             'client_id'            => $clientLocation->id,
             'destination_id'       => $destinationLocation->id,
             'delivery_category_id' => $deliveryCategory->id,
@@ -54,6 +55,7 @@ class OrderTest extends TestCase
 
         $this->assertDatabaseCount(Order::class, 1);
         $this->assertInstanceOf(Order::class, $order);
+        $this->assertSame($data['premium'], $order->premium);
         $this->assertSame($data['name'], $order->name);
 
         $this->assertSame((int) ($data['weight'] * 1000), (int) ($order->weight * 1000));
@@ -87,8 +89,10 @@ class OrderTest extends TestCase
 
         $order164 = $orders->where('number', 164)->firstOrFail();
         $this->assertSame($data[164]['name'], $order164->name);
+        $this->assertSame($data[164]['premium'], $order164->premium);
         $order639 = $orders->where('number', 639)->firstOrFail();
         $this->assertSame($data[639]['name'], $order639->name);
+        $this->assertSame($data[639]['premium'], $order639->premium);
     }
 
     public function test_an_order_belongs_to_a_client_location_and_destination_location(): void

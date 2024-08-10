@@ -42,6 +42,8 @@ class OrderResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                TextInput::make('premium')
+                    ->maxLength(255),
                 Select::make('client_id')
                     ->relationship('client', 'name')
                     ->required(),
@@ -71,6 +73,7 @@ class OrderResource extends Resource
                     ->searchable(),
                 TextColumn::make('name')
                     ->wrap()
+                    ->description(fn (Order $record): string => 'Premium: ' . $record->premium)
                     ->searchable(),
                 TextColumn::make('destination.district.name')
                     ->sortable(),

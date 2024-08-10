@@ -18,23 +18,27 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $number
  * @property string $name
+ * @property string|null $premium
  * @property int $max_likes
- * @property float $weight weight is cast to a float, it is stored as an int in the database (x10)
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property float $weight
  * @property int $client_id
  * @property int $destination_id
  * @property int $delivery_category_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Location $client
- * @property-read \App\Models\Location $destination
- * @property-read \App\Models\DeliveryCategory $deliveryCategory
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
- * @property-read int|null $users_count
- * @property-read \App\Models\OrderUser $pivot access to the pivot table's properties
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $completeDeliveries
+ * @property-read int|null $complete_deliveries_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $deliveries
  * @property-read int|null $deliveries_count
+ * @property-read \App\Models\DeliveryCategory $deliveryCategory
+ * @property-read \App\Models\Location $destination
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\District> $districts
  * @property-read int|null $districts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $userDeliveries
+ * @property-read int|null $user_deliveries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
  * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
@@ -47,7 +51,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereMaxLikes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order wherePremium($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereWeight($value)
  * @mixin \Eloquent
@@ -59,6 +63,7 @@ class Order extends Model
     protected $fillable = [
         'number',
         'name',
+        'premium',
         'client_id',
         'destination_id',
         'delivery_category_id',

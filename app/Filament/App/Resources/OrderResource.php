@@ -47,6 +47,8 @@ class OrderResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                TextInput::make('premium')
+                    ->maxLength(255),
                 Select::make('client_id')
                     ->relationship('client', 'name')
                     ->required(),
@@ -76,15 +78,18 @@ class OrderResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('name')
+                    ->description(fn (Order $record): string => 'Premium: ' . $record->premium)
                     ->wrap()
                     ->searchable(),
                 TextColumn::make('max_likes')
                     ->numeric()
                     ->sortable()
+                    ->formatStateUsing(fn ($state): string => '≈' . $state)
                     ->toggleable(),
                 TextColumn::make('weight')
                     ->numeric()
                     ->sortable()
+                    ->formatStateUsing(fn ($state): string => $state . ' kg')
                     ->toggleable(),
                 TextColumn::make('client.name')
                     ->visibleOn([ListOrders::class, DestinationOrdersRelationManager::class])

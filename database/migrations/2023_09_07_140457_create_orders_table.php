@@ -19,7 +19,7 @@ return new class() extends Migration {
             $table->string('name');
             $table->unsignedSmallInteger('max_likes');
             $table->unsignedSmallInteger('weight')->default(0);
-
+            $table->string('premium')->nullable();
             $table->foreignId('client_id')
                 ->constrained('locations')
                 ->cascadeOnUpdate()

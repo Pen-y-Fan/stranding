@@ -23,6 +23,7 @@ class OrderFactory extends Factory
         return [
             'number'               => fake()->unique()->numberBetween(1000, 5400),
             'name'                 => fake()->sentence(),
+            'premium'              => fake()->sentence(),
             'client_id'            => Location::factory(),
             'destination_id'       => Location::factory(),
             'delivery_category_id' => DeliveryCategory::factory(),

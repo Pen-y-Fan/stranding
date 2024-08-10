@@ -135,14 +135,12 @@ class DeliveryResource extends Resource
                     ->sortable(),
                 TextColumn::make('order.name')
                     ->wrap()
+                    ->description(fn (Delivery $record): string => 'Premium: ' . $record->order->premium)
                     ->url(static fn (Delivery $record): string => OrderResource::getUrl('view', [
                         'record' => $record->order->id,
                     ]))
                     ->searchable()
                     ->sortable(),
-                //                TextColumn::make('user.name')
-                //                    ->wrap()
-                //                    ->sortable(),
                 TextColumn::make('location.name')
                     ->wrap()
                     ->sortable(),
