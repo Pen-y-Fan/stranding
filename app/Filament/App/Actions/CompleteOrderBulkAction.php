@@ -8,6 +8,7 @@ use App\Enum\DeliveryStatus;
 use App\Models\Delivery;
 use App\Models\Order;
 use Filament\Actions\Concerns\CanCustomizeProcess;
+use Filament\Actions\Concerns\CanDispatchEvent;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ use Illuminate\Support\Str;
 class CompleteOrderBulkAction extends BulkAction
 {
     use CanCustomizeProcess;
+    use CanDispatchEvent;
 
     protected int $successCount = 0;
 
@@ -73,6 +75,9 @@ class CompleteOrderBulkAction extends BulkAction
                 'status'      => DeliveryStatus::COMPLETE,
                 'location_id' => $order->client_id,
             ]);
+        $livewire = $this->getLivewire();
+        /** @phpstan-ignore-next-line */
+        $livewire->dispatch('deliveryUpdated');
 
         if ($success > 0) {
             return;

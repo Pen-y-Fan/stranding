@@ -9,14 +9,17 @@ use App\Models\Delivery;
 use App\Models\Location;
 use App\Models\Order;
 use Filament\Actions\Concerns\CanCustomizeProcess;
+use Filament\Actions\Concerns\CanDispatchEvent;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class AcceptOrderBulkAction extends BulkAction
 {
     use CanCustomizeProcess;
+    use CanDispatchEvent;
 
     protected int $acceptCount = 0;
 
@@ -66,6 +69,10 @@ class AcceptOrderBulkAction extends BulkAction
             }));
 
             if ($this->acceptCount > 0) {
+                $livewire = $this->getLivewire();
+
+                /** @phpstan-ignore-next-line */
+                $livewire->dispatch('deliveryCreated');
                 $this->success();
             }
 

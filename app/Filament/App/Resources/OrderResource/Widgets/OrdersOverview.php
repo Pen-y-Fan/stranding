@@ -11,10 +11,18 @@ use App\Models\Order;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\On;
 
 class OrdersOverview extends BaseWidget
 {
     protected static ?string $pollingInterval = '30s';
+
+    #[On('deliveryUpdated')]
+    #[On('deliveryCreated')]
+    public function updateWidget(): void
+    {
+        // widget will automatically update
+    }
 
     protected function getStats(): array
     {
@@ -32,18 +40,31 @@ class OrdersOverview extends BaseWidget
 
         return [
             Stat::make('Orders complete', $completeOrdersCount)
-                ->description(sprintf('Complete %d of 540 = %0.1f%%', $completeOrdersCount, $completeOrdersCount / 540 * 100))
+                ->description(
+                    sprintf(
+                        'Complete %d (%0.1f%%) of 540 remaining %d',
+                        $completeOrdersCount,
+                        $completeOrdersCount / 540 * 100,
+                        540 - $completeOrdersCount
+                    )
+                )
                 ->descriptionIcon('heroicon-m-gift')
                 ->extraAttributes([
                     'class'      => 'cursor-pointer',
-                    'wire:click' => sprintf("\$dispatch('setStatusFilter', { filter: '%s'})", OrderStatus::COMPLETE->value),
+                    'wire:click' => sprintf(
+                        "\$dispatch('setStatusFilter', { filter: '%s'})",
+                        OrderStatus::COMPLETE->value
+                    ),
                 ])
                 ->color('success'),
             Stat::make('Deliveries', $deliveriesOnGoingCount)
                 ->description('On going deliveries')
                 ->extraAttributes([
                     'class'      => 'cursor-pointer',
-                    'wire:click' => sprintf("\$dispatch('setStatusFilter', { filter: '%s'})", OrderStatus::IN_PROGRESS->value),
+                    'wire:click' => sprintf(
+                        "\$dispatch('setStatusFilter', { filter: '%s'})",
+                        OrderStatus::IN_PROGRESS->value
+                    ),
                 ])
                 ->descriptionIcon('heroicon-m-truck'),
         ];

@@ -29,6 +29,7 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Component;
 
 class OrderResource extends Resource
 {
@@ -201,7 +202,6 @@ class OrderResource extends Resource
             ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Action::make('Accept')
-//                    ->requiresConfirmation()
                     ->button()
                     ->color('info')
                     ->form([
@@ -219,7 +219,7 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->action(static function (array $data, Order $record): void {
+                    ->action(static function (array $data, Order $record, Component $livewire): void {
                         Delivery::create([
                             'order_id'    => $record->id,
                             'user_id'     => auth()->id(),
@@ -231,6 +231,9 @@ class OrderResource extends Resource
                                 ->firstOrFail('id')->id,
                             'comment' => $data['comment'],
                         ]);
+
+                        $livewire->dispatch('deliveryCreated');
+
                         Notification::make()
                             ->title('Standard delivery order taken')
                             ->success()
@@ -365,7 +368,7 @@ class OrderResource extends Resource
                         }
                     )
 
-                    ->action(static function (array $data, Order $record): void {
+                    ->action(static function (array $data, Order $record, Component $livewire): void {
                         Delivery::where([
                             'order_id' => $record->id,
                             'user_id'  => auth()->id(),
@@ -380,6 +383,9 @@ class OrderResource extends Resource
                                 'location_id' => $record->client_id,
                                 'comment'     => $data['comment'],
                             ]);
+
+                        $livewire->dispatch('deliveryUpdated');
+
                         Notification::make()
                             ->title('order failed')
                             ->success()
@@ -417,7 +423,7 @@ class OrderResource extends Resource
                             ->whereOrderId($record->id)
                             ->exists()
                     )
-                    ->action(static function (array $data, Order $record): void {
+                    ->action(static function (array $data, Order $record, Component $livewire): void {
                         Delivery::where([
                             'order_id' => $record->id,
                             'user_id'  => auth()->id(),
@@ -432,6 +438,9 @@ class OrderResource extends Resource
                                 'location_id' => $record->client_id,
                                 'comment'     => $data['comment'],
                             ]);
+
+                        $livewire->dispatch('deliveryUpdated');
+
                         Notification::make()
                             ->title('order delivered')
                             ->success()
