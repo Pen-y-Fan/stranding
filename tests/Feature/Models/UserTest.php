@@ -172,6 +172,7 @@ class UserTest extends TestCase
         $this->assertCount(1, $lastUserOrders);
 
         $lastUserOrders->each(
+            // @phpstan-ignore-next-line
             fn (Order $order) => $this->assertSame(OrderStatus::IN_PROGRESS->getLabel(), $order->pivot->status)
         );
     }

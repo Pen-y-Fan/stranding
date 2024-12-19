@@ -40,6 +40,9 @@ parameters:
         - message: '#Method App\\Filament\\App\\Resources\\DeliveryResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder<App\\Models\\Delivery> but returns Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>#'
           path: app\Filament\App\Resources\DeliveryResource.php
 
+        -
+            identifier: missingType.iterableValue
+
     excludePaths:
         - ./config/*
         - ./ecs.php
@@ -47,5 +50,3 @@ parameters:
         # - ./database/factories/*
         # - ./database/seeders/*
         # - ./*/*/FileToBeExcluded.php
-
-    checkMissingIterableValueType: false

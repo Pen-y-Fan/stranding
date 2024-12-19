@@ -69,6 +69,9 @@ class OrderResource extends Resource
             ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -103,7 +106,8 @@ class OrderResource extends Resource
                 TextColumn::make('destination.name')
                     ->visibleOn([ListOrders::class, ClientOrdersRelationManager::class])
                     ->url(static fn (Order $record): string => LocationResource::getUrl('view', [
-                        'record' => $record->destination_id,
+                        'record'                => $record->destination_id,
+                        'activeRelationManager' => 1,
                     ]))
                     ->wrap()
                     ->toggleable()
@@ -456,9 +460,7 @@ class OrderResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

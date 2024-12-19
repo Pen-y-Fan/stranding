@@ -14,7 +14,6 @@ use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Livewire\Component;
 
 class AcceptOrderBulkAction extends BulkAction
 {
