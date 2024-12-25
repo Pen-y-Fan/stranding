@@ -7,6 +7,7 @@ namespace App\Filament\App\Resources;
 use App\Filament\App\Resources\LocationResource\Pages;
 use App\Filament\App\Resources\LocationResource\RelationManagers\ClientOrdersRelationManager;
 use App\Filament\App\Resources\LocationResource\RelationManagers\DestinationOrdersRelationManager;
+use App\Filament\App\Resources\LocationResource\Widgets\LocationOverview;
 use App\Filament\App\Resources\OrderResource\Widgets\OrdersOverview;
 use App\Models\Location;
 use Filament\Forms;
@@ -74,6 +75,7 @@ class LocationResource extends Resource
     public static function getWidgets(): array
     {
         return [
+            LocationOverview::class,
             OrdersOverview::class,
         ];
     }
