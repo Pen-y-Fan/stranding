@@ -15,4 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', static fn () => view('welcome'));
+Route::redirect('/', '/app');
+
+Route::get('/welcome', static fn () => view('welcome'));
